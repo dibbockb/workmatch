@@ -179,6 +179,17 @@
 
   html {
     scroll-behavior: smooth;
+    /* Reserve scrollbar gutter so the scrollbar never shifts page width */
+    scrollbar-gutter: stable;
+  }
+
+  /* Global 90% scale on desktop — mirrors browser zoom-out in one rule.
+     Scoped to lg+ so phones/tablets keep their native sizing and touch
+     targets. Tweak the number to taste (e.g. 0.85, 0.95). */
+  @media (min-width: 1024px) {
+    body {
+      zoom: 0.9;
+    }
   }
 
   body {
@@ -187,6 +198,12 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Subtle dot pattern instead of flat white — theme foreground at 6% */
+    background-image: radial-gradient(
+      color-mix(in oklch, var(--foreground) 6%, transparent) 1px,
+      transparent 1.4px
+    );
+    background-size: 22px 22px;
   }
 
   ::selection {
@@ -251,8 +268,11 @@
 }
 
 @utility navbar-morph {
+  /* NOTE: backdrop-filter + filter are intentionally NOT transitioned —
+     animating them forces a full backdrop repaint every frame (scroll lag).
+     The blur itself stays static; only tint/shadow/shape morph. */
   transition-property: max-width, width, border-radius, padding, margin,
-    background-color, border-color, box-shadow, transform, backdrop-filter;
+    background-color, border-color, box-shadow, transform;
   transition-duration: 650ms;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
   will-change: max-width, border-radius, transform, box-shadow;

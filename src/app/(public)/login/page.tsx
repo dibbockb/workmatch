@@ -1,0 +1,216 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import Navbar from "@/components/landing/navbar";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Field } from "@/components/ui/field";
+import { Separator } from "@/components/ui/separator";
+import {
+  DEMO_ACCOUNTS,
+  DEMO_ROLES,
+  fakeAuthRequest,
+  type DemoRole,
+} from "@/lib/demo-accounts";
+import { cn } from "@/lib/utils";
+import {
+  ArrowRight,
+  Briefcase,
+  CircleNotch,
+  Eye,
+  EyeSlash,
+  Info,
+  Palette,
+  ShieldCheck,
+} from "@phosphor-icons/react";
+
+const ROLE_ICONS: Record<DemoRole, typeof ShieldCheck> = {
+  admin: ShieldCheck,
+  client: Briefcase,
+  freelancer: Palette,
+};
+
+export default function LoginPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [loadingRole, setLoadingRole] = useState<DemoRole | "form" | null>(
+    null
+  );
+  const [notice, setNotice] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (loading) return;
+    setLoading(true);
+    setLoadingRole("form");
+    setNotice(null);
+    // TODO: connect backend — POST credentials, handle session + role redirect.
+    await fakeAuthRequest();
+    setLoading(false);
+    setLoadingRole(null);
+  }
+
+  async function handleDemoLogin(role: DemoRole) {
+    if (loading) return;
+    const account = DEMO_ACCOUNTS[role];
+    setEmail(account.email);
+    setPassword(account.password);
+    setLoading(true);
+    setLoadingRole(role);
+    setNotice(null);
+    // TODO: connect backend — POST demo credentials, redirect by role.
+    await fakeAuthRequest();
+    setLoading(false);
+    setLoadingRole(null);
+  }
+
+  return (
+    <div className="min-h-full bg-background font-sans text-foreground">
+      <Navbar />
+
+      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
+        <div className="absolute inset-x-0 top-0 mx-auto h-120 max-w-5xl rounded-b-[4rem] bg-linear-to-b from-secondary/60 via-secondary/20 to-transparent" />
+        <div className="absolute top-24 left-1/2 h-72 w-2xl -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
+      </div>
+
+      <main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 pt-32 pb-16">
+        <div className="animate-rise rounded-4xl border border-border bg-card p-7 shadow-[0_40px_100px_-40px_oklch(0.43_0.04_42/0.5)] sm:p-9">
+          <h1 className="mt-5 text-3xl font-bold tracking-[-0.03em]">
+            Welcome back
+          </h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            Sign in to your marketplace workspace.
+          </p>
+
+          <p className="mt-7 text-xs font-bold tracking-[0.14em] text-muted-foreground uppercase">
+            Try a demo account
+          </p>
+          <div className="mt-3 grid grid-cols-3 gap-2">
+            {DEMO_ROLES.map((role) => {
+              const Icon = ROLE_ICONS[role];
+              const isActive = loading && loadingRole === role;
+              return (
+                <button
+                  key={role}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleDemoLogin(role)}
+                  className={cn(
+                    "flex flex-col items-center gap-1.5 rounded-2xl border px-2 py-3.5 text-[13px] font-bold transition-all duration-500 ease-snappy disabled:cursor-wait disabled:opacity-70",
+                    isActive
+                      ? "border-primary/60 bg-secondary text-secondary-foreground shadow-md"
+                      : "border-border bg-background text-foreground hover:-translate-y-0.5 hover:border-primary/40 hover:bg-secondary hover:text-secondary-foreground hover:shadow-md"
+                  )}
+                >
+                  {isActive ? (
+                    <CircleNotch className="size-5 animate-spin" />
+                  ) : (
+                    <Icon weight="duotone" className="size-5" />
+                  )}
+                  {DEMO_ACCOUNTS[role].label}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="my-6 flex items-center gap-3 text-xs font-medium text-muted-foreground">
+            <Separator className="flex-1" />
+            or continue with email
+            <Separator className="flex-1" />
+          </div>
+
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <Field>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                required
+                placeholder="you@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </Field>
+
+            <Field>
+              <div className="flex items-center justify-between">
+                <Label htmlFor="password">Password</Label>
+                <a
+                  href="/login"
+                  className="text-xs font-semibold text-muted-foreground transition-colors hover:text-primary"
+                >
+                  Forgot password?
+                </a>
+              </div>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  onClick={() => setShowPassword((v) => !v)}
+                  className="absolute top-1/2 right-2.5 grid size-6 -translate-y-1/2 place-items-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                >
+                  {showPassword ? (
+                    <EyeSlash className="size-4" />
+                  ) : (
+                    <Eye className="size-4" />
+                  )}
+                </button>
+              </div>
+            </Field>
+
+            <Button
+              type="submit"
+              size="lg"
+              disabled={loading}
+              className="mt-1 w-full rounded-xl py-3 text-[15px] font-bold"
+            >
+              {loading && loadingRole === "form" ? (
+                <>
+                  <CircleNotch className="size-4 animate-spin" />
+                  Signing in…
+                </>
+              ) : (
+                <>
+                  Sign in
+                  <ArrowRight className="size-4" />
+                </>
+              )}
+            </Button>
+          </form>
+
+          {notice && (
+            <p className="mt-4 flex items-start gap-2 rounded-2xl border border-border bg-muted/60 px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
+              <Info className="mt-0.5 size-4 shrink-0 text-primary" />
+              {notice}
+            </p>
+          )}
+
+          <p className="mt-6 text-center text-sm text-muted-foreground">
+            New to WorkMatch?{" "}
+            <Link
+              href="/signup"
+              className="font-bold text-primary hover:underline"
+            >
+              Create an account
+            </Link>
+          </p>
+        </div>
+      </main>
+    </div>
+  );
+}

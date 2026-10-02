@@ -128,24 +128,22 @@ export default function Home() {
     <div id="top" className="min-h-full bg-background font-sans text-foreground">
       <Navbar />
 
-      {/* ambient wash — theme colors only */}
       <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
-        <div className="absolute inset-x-0 top-0 mx-auto h-[640px] max-w-5xl rounded-b-[4rem] bg-gradient-to-b from-secondary/60 via-secondary/20 to-transparent" />
-        <div className="absolute top-24 left-1/2 h-72 w-[42rem] -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
+        <div className="absolute inset-x-0 top-0 mx-auto h-160 max-w-5xl rounded-b-[4rem] bg-linear-to-b from-secondary/60 via-secondary/20 to-transparent" />
+        <div className="absolute top-24 left-1/2 h-72 w-2xl -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
       </div>
 
-      {/* ——— HERO · centered island ——— */}
       <section className="mx-auto max-w-5xl px-5 pt-36 text-center sm:pt-44">
-        <div className="animate-rise">
+        <div className="animate-rise hidden lg:inline">
           <a
             href="#marketplace"
-            className="group inline-flex items-center gap-2 rounded-full border border-border bg-card/80 py-1.5 pr-4 pl-1.5 text-[13px] font-medium text-muted-foreground shadow-sm backdrop-blur transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:border-primary/40 hover:shadow-md"
+            className="group inline-flex items-center gap-2 rounded-full border border-border bg-card/80 py-1.5 pr-4 pl-1.5 text-[13px] font-medium text-muted-foreground shadow-sm backdrop-blur transition-all duration-500 ease-snappy hover:border-primary/40 hover:shadow-md"
           >
             <span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-secondary-foreground">
               NEW
             </span>
             AI matching 2.0 — 98.2% placement accuracy
-            <ArrowRight className="size-3.5 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1" />
+            <ArrowRight className="size-3.5 transition-transform duration-500 ease-snappy group-hover:translate-x-1" />
           </a>
         </div>
 
@@ -181,12 +179,11 @@ export default function Home() {
           pay safely in escrow.
         </p>
 
-        {/* Search island */}
         <div
           className="animate-rise mx-auto mt-9 max-w-2xl"
           style={{ animationDelay: "240ms" }}
         >
-          <div className="flex items-center gap-2 rounded-2xl border border-border bg-card p-2 shadow-[0_20px_60px_-24px_oklch(0.43_0.04_42/0.4)] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] focus-within:border-primary/50 focus-within:shadow-[0_20px_70px_-20px_oklch(0.43_0.04_42/0.55)] sm:rounded-full">
+          <div className="flex items-center gap-2 rounded-2xl border border-border bg-card p-2 shadow-[0_20px_60px_-24px_oklch(0.43_0.04_42/0.4)] transition-all duration-500 ease-snappy sm:rounded-full">
             <div className="grid size-11 shrink-0 place-items-center rounded-full bg-muted text-muted-foreground">
               <MagnifyingGlass className="size-5" weight="bold" />
             </div>
@@ -194,11 +191,11 @@ export default function Home() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Try “SaaS dashboard designer” or “Next.js + AI”…"
-              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground sm:text-[15px]"
+              className="w-full bg-transparent text-sm text-foreground outline-none sm:text-[15px]"
             />
-            <button className="group hidden shrink-0 items-center gap-1.5 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-primary/90 active:scale-[0.97] sm:inline-flex">
+            <button className="group hidden shrink-0 items-center gap-1.5 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-all duration-500 ease-snappy hover:bg-primary/90 active:scale-[0.97] sm:inline-flex">
               Find talent
-              <ArrowRight className="size-4 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:translate-x-1" />
+              <ArrowRight className="size-4 transition-transform duration-500 ease-spring group-hover:translate-x-1" />
             </button>
           </div>
           <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-[13px]">
@@ -208,7 +205,7 @@ export default function Home() {
                 <button
                   key={t}
                   onClick={() => setQuery(t)}
-                  className="rounded-full border border-border bg-card px-3.5 py-1.5 font-medium text-foreground transition-all duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-primary/40 hover:bg-secondary hover:text-secondary-foreground hover:shadow-md"
+                  className="rounded-full border border-border bg-card px-3.5 py-1.5 font-medium text-foreground transition-all duration-300 ease-snappy hover:-translate-y-0.5 hover:border-primary/40 hover:bg-secondary hover:text-secondary-foreground hover:shadow-md"
                 >
                   {t}
                 </button>
@@ -217,7 +214,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* social proof */}
         <div
           className="animate-rise mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row"
           style={{ animationDelay: "320ms" }}
@@ -250,14 +246,12 @@ export default function Home() {
           </div>
         </div>
 
-        {/* ——— Product preview island ——— */}
         <div
           className="animate-rise relative mx-auto mt-14 max-w-4xl"
           style={{ animationDelay: "400ms" }}
         >
-          <div className="absolute -inset-4 rounded-[2.5rem] bg-gradient-to-b from-secondary/50 to-transparent blur-2xl" aria-hidden />
-          <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card text-left shadow-[0_40px_100px_-40px_oklch(0.43_0.04_42/0.5)] sm:rounded-[2rem]">
-            {/* window chrome */}
+          <div className="absolute -inset-4 rounded-[2.5rem] bg-linear-to-b from-secondary/50 to-transparent blur-2xl" aria-hidden />
+          <div className="relative overflow-hidden rounded-[1.75rem] border border-border bg-card text-left shadow-[0_40px_100px_-40px_oklch(0.43_0.04_42/0.5)] sm:rounded-4xl">
             <div className="flex items-center justify-between border-b border-border bg-muted/50 px-5 py-3">
               <div className="flex gap-1.5">
                 <span className="size-2.5 rounded-full bg-border" />
@@ -274,7 +268,6 @@ export default function Home() {
             </div>
 
             <div className="grid gap-0 md:grid-cols-[1fr_280px]">
-              {/* brief */}
               <div className="border-b border-border p-5 sm:p-7 md:border-r md:border-b-0">
                 <div className="flex items-center justify-between">
                   <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
@@ -297,7 +290,6 @@ export default function Home() {
                     </span>
                   ))}
                 </div>
-                {/* match rows */}
                 <div className="mt-5 space-y-3">
                   {[
                     { n: "Jonas W.", s: "Next.js · 6 yrs · 4.9★", m: 98 },
@@ -306,7 +298,7 @@ export default function Home() {
                   ].map((r) => (
                     <div
                       key={r.n}
-                      className="group flex items-center gap-3 rounded-2xl border border-border bg-background p-3 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
+                      className="group flex items-center gap-3 rounded-2xl border border-border bg-background p-3 transition-all duration-500 ease-snappy hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-lg"
                     >
                       <span className="grid size-10 shrink-0 place-items-center rounded-full bg-muted text-xs font-bold">
                         {r.n.split(" ").map((w) => w[0]).join("")}
@@ -316,7 +308,7 @@ export default function Home() {
                         <p className="truncate text-xs text-muted-foreground">{r.s}</p>
                         <div className="mt-1.5 h-1.5 overflow-hidden rounded-full bg-muted">
                           <div
-                            className="h-full rounded-full bg-primary transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]"
+                            className="h-full rounded-full bg-primary transition-all duration-1000 ease-snappy"
                             style={{ width: `${r.m}%` }}
                           />
                         </div>
@@ -328,7 +320,6 @@ export default function Home() {
                   ))}
                 </div>
               </div>
-              {/* escrow side */}
               <div className="bg-muted/40 p-5 sm:p-6">
                 <p className="text-xs font-bold tracking-widest text-muted-foreground uppercase">
                   Protected payment
@@ -359,7 +350,7 @@ export default function Home() {
                     </div>
                   ))}
                 </div>
-                <button className="mt-4 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.02] active:scale-[0.98]">
+                <button className="mt-4 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground transition-transform duration-500 ease-spring hover:scale-[1.02] active:scale-[0.98]">
                   Approve & release
                 </button>
                 <p className="mt-2 text-center text-[11px] text-muted-foreground">
@@ -369,7 +360,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* floating chips */}
           <div className="animate-float-slow absolute -left-4 top-16 hidden rounded-2xl border border-border bg-card/95 px-4 py-3 text-left shadow-xl backdrop-blur lg:block">
             <p className="flex items-center gap-1.5 text-xs font-bold">
               <CheckCircle weight="fill" className="size-4 text-primary" /> Hired in 19h
@@ -388,12 +378,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— LOGOS ——— */}
       <section className="mx-auto mt-16 max-w-4xl px-5 text-center">
         <p className="text-xs font-bold tracking-[0.18em] text-muted-foreground uppercase">
           Powering hiring at 3,400+ teams
         </p>
-        <div className="relative mt-6 overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
+        <div className="relative mt-6 overflow-hidden mask-[linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
           <div className="animate-marquee flex w-max gap-3">
             {[...["Northloop", "Parcelform", "Hexlab", "Craftly", "Moonshot", "Finch & Co", "Dataline", "Brightstack"], ...["Northloop", "Parcelform", "Hexlab", "Craftly", "Moonshot", "Finch & Co", "Dataline", "Brightstack"]].map(
               (b, i) => (
@@ -409,9 +398,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— MARKETPLACE CATEGORIES · island ——— */}
       <section id="marketplace" className="mx-auto mt-24 max-w-5xl scroll-mt-28 px-5">
-        <div className="rounded-[2rem] border border-border bg-card px-6 py-12 text-center shadow-[0_30px_80px_-50px_oklch(0_0_0/0.3)] sm:rounded-[2.5rem] sm:px-12 sm:py-16">
+        <div className="rounded-4xl border border-border bg-card px-6 py-12 text-center shadow-[0_30px_80px_-50px_oklch(0_0_0/0.3)] sm:rounded-[2.5rem] sm:px-12 sm:py-16">
           <SectionBadge>Marketplace</SectionBadge>
           <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
             One island for every skill your roadmap needs
@@ -425,9 +413,9 @@ export default function Home() {
               <a
                 key={c.name}
                 href="#talent"
-                className="group rounded-2xl border border-border bg-background p-5 text-left transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-[0_20px_40px_-20px_oklch(0.43_0.04_42/0.5)]"
+                className="group rounded-2xl border border-border bg-background p-5 text-left transition-all duration-500 ease-snappy hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-[0_20px_40px_-20px_oklch(0.43_0.04_42/0.5)]"
               >
-                <span className="grid size-10 place-items-center rounded-xl bg-secondary text-secondary-foreground transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110 group-hover:-rotate-6">
+                <span className="grid size-10 place-items-center rounded-xl bg-secondary text-secondary-foreground transition-transform duration-500 ease-spring group-hover:scale-110 group-hover:-rotate-6">
                   <c.icon className="size-5" weight="duotone" />
                 </span>
                 <p className="mt-4 text-[15px] font-bold">{c.name}</p>
@@ -441,7 +429,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— HOW IT WORKS ——— */}
       <section id="how" className="mx-auto mt-24 max-w-4xl scroll-mt-28 px-5 text-center">
         <SectionBadge>How it works</SectionBadge>
         <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
@@ -470,10 +457,10 @@ export default function Home() {
           ].map((s) => (
             <div
               key={s.n}
-              className="group rounded-3xl border border-border bg-card p-6 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:shadow-xl"
+              className="group rounded-3xl border border-border bg-card p-6 transition-all duration-500 ease-snappy hover:-translate-y-1.5 hover:shadow-xl"
             >
               <div className="flex items-center justify-between">
-                <span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-110">
+                <span className="grid size-11 place-items-center rounded-2xl bg-primary text-primary-foreground transition-transform duration-500 ease-spring group-hover:scale-110">
                   <s.icon className="size-5" weight="duotone" />
                 </span>
                 <span className="text-sm font-bold text-border transition-colors duration-300 group-hover:text-secondary-foreground/40">
@@ -487,7 +474,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— TALENT · centered cards ——— */}
       <section id="talent" className="mx-auto mt-24 max-w-5xl scroll-mt-28 px-5 text-center">
         <SectionBadge>Top talent</SectionBadge>
         <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
@@ -500,7 +486,7 @@ export default function Home() {
           {TALENT.map((t) => (
             <article
               key={t.name}
-              className="group rounded-3xl border border-border bg-card p-6 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-2 hover:shadow-[0_30px_60px_-30px_oklch(0.43_0.04_42/0.45)]"
+              className="group rounded-3xl border border-border bg-card p-6 transition-all duration-500 ease-snappy hover:-translate-y-2 hover:shadow-[0_30px_60px_-30px_oklch(0.43_0.04_42/0.45)]"
             >
               <div className="flex items-start justify-between">
                 <span className="grid size-14 place-items-center rounded-2xl bg-secondary text-lg font-bold text-secondary-foreground">
@@ -528,7 +514,7 @@ export default function Home() {
                   </span>
                 ))}
               </div>
-              <button className="mt-5 w-full rounded-xl border border-border py-2.5 text-sm font-bold transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+              <button className="mt-5 w-full rounded-xl border border-border py-2.5 text-sm font-bold transition-all duration-500 ease-snappy group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
                 View profile
               </button>
             </article>
@@ -539,16 +525,15 @@ export default function Home() {
           className="group mt-8 inline-flex items-center gap-2 text-sm font-bold text-primary"
         >
           Browse all 24,000 experts
-          <ArrowRight className="size-4 transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:translate-x-1.5" />
+          <ArrowRight className="size-4 transition-transform duration-500 ease-spring group-hover:translate-x-1.5" />
         </a>
       </section>
 
-      {/* ——— METRICS · dark island ——— */}
       <section className="mx-auto mt-24 max-w-5xl px-5">
-        <div className="relative overflow-hidden rounded-[2rem] bg-primary px-6 py-14 text-center text-primary-foreground sm:rounded-[2.5rem] sm:px-12">
+        <div className="relative overflow-hidden rounded-4xl bg-primary px-6 py-14 text-center text-primary-foreground sm:rounded-[2.5rem] sm:px-12">
           <div
             aria-hidden
-            className="absolute -top-24 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-white/10 blur-[80px]"
+            className="absolute -top-24 left-1/2 h-64 w-xl -translate-x-1/2 rounded-full bg-white/10 blur-[80px]"
           />
           <p className="text-xs font-bold tracking-[0.2em] uppercase opacity-70">
             Why teams switch
@@ -572,7 +557,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— TESTIMONIALS ——— */}
       <section id="stories" className="mx-auto mt-24 max-w-4xl scroll-mt-28 px-5 text-center">
         <SectionBadge>Client stories</SectionBadge>
         <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
@@ -582,7 +566,7 @@ export default function Home() {
           {TESTIMONIALS.map((t) => (
             <figure
               key={t.name}
-              className="flex flex-col rounded-3xl border border-border bg-card p-6 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5 hover:shadow-xl"
+              className="flex flex-col rounded-3xl border border-border bg-card p-6 transition-all duration-500 ease-snappy hover:-translate-y-1.5 hover:shadow-xl"
             >
               <Quotes weight="fill" className="size-6 text-secondary-foreground/50" />
               <blockquote className="mt-3 flex-1 text-sm leading-relaxed text-foreground">
@@ -602,7 +586,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— PRICING · island ——— */}
       <section id="pricing" className="mx-auto mt-24 max-w-5xl scroll-mt-28 px-5 text-center">
         <SectionBadge>Pricing</SectionBadge>
         <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
@@ -614,7 +597,7 @@ export default function Home() {
               key={b}
               onClick={() => setBilling(b)}
               className={cn(
-                "rounded-full px-5 py-2 capitalize transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                "rounded-full px-5 py-2 capitalize transition-all duration-500 ease-snappy",
                 billing === b
                   ? "bg-primary text-primary-foreground shadow"
                   : "text-muted-foreground hover:text-foreground"
@@ -659,7 +642,7 @@ export default function Home() {
             <div
               key={p.name}
               className={cn(
-                "relative rounded-3xl border p-7 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:-translate-y-1.5",
+                "relative rounded-3xl border p-7 transition-all duration-500 ease-snappy hover:-translate-y-1.5",
                 p.hot
                   ? "border-primary/50 bg-primary text-primary-foreground shadow-[0_30px_70px_-30px_oklch(0.43_0.04_42/0.7)]"
                   : "border-border bg-card hover:shadow-xl"
@@ -688,7 +671,7 @@ export default function Home() {
               </ul>
               <button
                 className={cn(
-                  "mt-6 w-full rounded-xl py-3 text-sm font-bold transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.02] active:scale-[0.98]",
+                  "mt-6 w-full rounded-xl py-3 text-sm font-bold transition-transform duration-500 ease-spring hover:scale-[1.02] active:scale-[0.98]",
                   p.hot
                     ? "bg-primary-foreground text-primary"
                     : "bg-primary text-primary-foreground"
@@ -701,7 +684,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— FAQ ——— */}
       <section className="mx-auto mt-24 max-w-2xl px-5 text-center">
         <SectionBadge>FAQ</SectionBadge>
         <h2 className="mt-5 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">
@@ -714,7 +696,7 @@ export default function Home() {
               <div
                 key={f.q}
                 className={cn(
-                  "overflow-hidden rounded-2xl border transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                  "overflow-hidden rounded-2xl border transition-all duration-500 ease-snappy",
                   open ? "border-primary/40 bg-card shadow-lg" : "border-border bg-card"
                 )}
               >
@@ -725,7 +707,7 @@ export default function Home() {
                   {f.q}
                   <span
                     className={cn(
-                      "grid size-8 shrink-0 place-items-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
+                      "grid size-8 shrink-0 place-items-center rounded-full transition-all duration-500 ease-spring",
                       open ? "rotate-180 bg-primary text-primary-foreground" : "bg-muted text-foreground"
                     )}
                   >
@@ -734,7 +716,7 @@ export default function Home() {
                 </button>
                 <div
                   className={cn(
-                    "grid transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                    "grid transition-all duration-500 ease-snappy",
                     open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
                   )}
                 >
@@ -750,10 +732,9 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— FINAL CTA · island ——— */}
       <section id="cta" className="mx-auto mt-24 max-w-5xl scroll-mt-28 px-5">
-        <div className="relative overflow-hidden rounded-[2rem] border border-border bg-secondary px-6 py-16 text-center text-secondary-foreground sm:rounded-[2.5rem] sm:px-12">
-          <div className="absolute inset-x-0 top-0 mx-auto h-40 w-[30rem] rounded-full bg-white/40 blur-[80px]" aria-hidden />
+        <div className="relative overflow-hidden rounded-4xl border border-border bg-secondary px-6 py-16 text-center text-secondary-foreground sm:rounded-[2.5rem] sm:px-12">
+          <div className="absolute inset-x-0 top-0 mx-auto h-40 w-120 rounded-full bg-white/40 blur-[80px]" aria-hidden />
           <Briefcase weight="duotone" className="mx-auto size-12" />
           <h2 className="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
             Post your brief today. Meet your match tomorrow.
@@ -765,14 +746,14 @@ export default function Home() {
           <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <a
               href="#top"
-              className="group inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-xl transition-transform duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:scale-[1.04] active:scale-[0.98]"
+              className="group inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-xl transition-transform duration-500 ease-spring hover:scale-[1.04] active:scale-[0.98]"
             >
               Post a job — it’s free
-              <ArrowRight className="size-4 transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-x-1" />
+              <ArrowRight className="size-4 transition-transform duration-500 ease-snappy group-hover:translate-x-1" />
             </a>
             <a
               href="#talent"
-              className="inline-flex items-center gap-2 rounded-full border border-secondary-foreground/25 px-7 py-3.5 text-sm font-bold transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-secondary-foreground hover:text-secondary"
+              className="inline-flex items-center gap-2 rounded-full border border-secondary-foreground/25 px-7 py-3.5 text-sm font-bold transition-all duration-500 ease-snappy hover:bg-secondary-foreground hover:text-secondary"
             >
               <MapPin className="size-4" /> Browse talent
             </a>
@@ -784,9 +765,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ——— FOOTER ——— */}
       <footer className="mx-auto mt-20 max-w-5xl px-5 pb-10">
-        <div className="rounded-[2rem] border border-border bg-card px-6 py-10 sm:px-10">
+        <div className="rounded-4xl border border-border bg-card px-6 py-10 sm:px-10">
           <div className="flex flex-col items-center justify-between gap-6 text-center sm:flex-row sm:text-left">
             <div className="flex items-center gap-2.5">
               <span className="grid size-9 place-items-center rounded-full bg-primary text-primary-foreground">
