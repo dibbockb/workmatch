@@ -1,8 +1,8 @@
 import { ofetch } from "ofetch";
 
-const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:3000";
+const serverUrl = process.env.NEXT_PUBLIC_SERVER_URL;
 
-export const $fetch = ofetch.create({
+export const apiFetch = ofetch.create({
     baseURL: serverUrl,
     retry: 1,
     timeout: 60 * 1000,
@@ -25,4 +25,4 @@ export const $fetch = ofetch.create({
     },
 });
 
-export default $fetch;
+export default apiFetch;
