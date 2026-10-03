@@ -1,5 +1,5 @@
-import apiFetch from "@/lib/fetch";
-import { loginSchema, registerSchema, userSchema } from "./_validation/schemas";
+import apiFetch from "@/lib/api-client";
+import { loginSchema, registerSchema, userSchema } from "./schemas";
 
 export async function login(data: { email: string; password: string }) {
     const validated = loginSchema.parse(data);

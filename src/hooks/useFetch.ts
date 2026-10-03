@@ -4,7 +4,7 @@ import {
     type UseQueryOptions,
     type UseMutationOptions,
 } from "@tanstack/react-query";
-import $fetch from "@/lib/fetch";
+import $fetch from "@/lib/api-client";
 
 export function useFetch<T>(
     url: string | null,
