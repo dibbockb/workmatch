@@ -24,8 +24,8 @@ export async function register(data: {
 }
 
 export async function getMe() {
-    const data = await apiFetch("/v1/auth/me")
-    return userSchema.parse(data);
+    const res = await apiFetch("/v1/auth/me")
+    return userSchema.parse(res.data);
 }
 
 export async function logout() {

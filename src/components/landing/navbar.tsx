@@ -10,6 +10,9 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import AuthActions, { DASHBOARD_HOME } from "./user-menu";
+import { useMe } from "@/app/features/auth/queries";
+// inside Navbar():
 
 const LINKS = [
   { label: "Marketplace", href: "#marketplace" },
@@ -23,6 +26,7 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [progress, setProgress] = useState(0);
   const [open, setOpen] = useState(false);
+  const { data: user } = useMe();
 
   useEffect(() => {
     let raf = 0;
@@ -53,7 +57,7 @@ export default function Navbar() {
       >
         <header
           className={cn(
-            "navbar-morph pointer-events-auto relative w-full rounded-full border transform-gpu backdrop-blur-md backdrop-saturate-150",
+            "navbar-morph pointer-events-auto relative w-full rounded-full border backdrop-blur-lg backdrop-saturate-100",
             scrolled
               ? "mt-3 border-white/30 bg-card/65 py-2.5 pr-2.5 pl-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.35),0_16px_50px_-16px_oklch(0.43_0.04_42/0.45),0_2px_12px_-2px_oklch(0_0_0/0.12)]"
               : "mt-4 border-white/25 bg-background/55 py-3 pr-3 pl-5 shadow-[inset_0_1px_0_0_rgb(255_255_255/0.3),0_8px_30px_-18px_oklch(0_0_0/0.25)]"
@@ -98,24 +102,9 @@ export default function Navbar() {
             </div>
 
             <div className="flex shrink-0 flex-nowrap items-center gap-2">
-              <Link
-                href="/login"
-                className="hidden rounded-full px-3 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground sm:block"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/signup"
-                className="group hidden shrink-0 items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold whitespace-nowrap text-primary-foreground shadow-[0_8px_20px_-10px_oklch(0.43_0.04_42/0.8)] transition-colors duration-300 hover:bg-primary/90 sm:inline-flex"
-              >
-                <Sparkle
-                  weight="fill"
-                  className="size-3.5 transition-transform duration-500 ease-spring group-hover:rotate-90 group-hover:scale-125"
-                />
-                Post a job
-                <ArrowRight className="size-3.5 transition-transform duration-500 ease-snappy group-hover:translate-x-0.5" />
-              </Link>
+              <AuthActions></AuthActions>
               <button
+                type="button"
                 onClick={() => setOpen((v) => !v)}
                 aria-label="Toggle menu"
                 aria-expanded={open}
@@ -176,17 +165,25 @@ export default function Navbar() {
                   <ArrowRight className="size-4 opacity-40" />
                 </a>
               ))}
-              <Link
-                href="/login"
-                onClick={() => setOpen(false)}
-                style={{ transitionDelay: open ? `${LINKS.length * 40}ms` : "0ms" }}
-                className={cn(
-                  "mt-1 flex items-center justify-center rounded-2xl bg-muted px-4 py-3 text-sm font-semibold text-muted-foreground transition-all duration-500 ease-snappy sm:hidden",
-                  open ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
-                )}
-              >
-                Sign in
-              </Link>
+
+              {user ?
+                <Link href={DASHBOARD_HOME[user.role]} onClick={() => setOpen(false)}
+                  className="mt-1 flex items-center justify-center rounded-2xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">
+                  Go to dashboard
+                </Link>
+                :
+                <Link
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  style={{ transitionDelay: open ? `${LINKS.length * 40}ms` : "0ms" }}
+                  className={cn(
+                    "mt-1 flex items-center justify-center rounded-2xl bg-muted px-4 py-3 text-sm font-semibold text-muted-foreground transition-all duration-500 ease-snappy sm:hidden",
+                    open ? "translate-y-0 opacity-100" : "-translate-y-2 opacity-0"
+                  )}
+                >
+                  Sign in
+                </Link>}
+
               <Link
                 href="/signup"
                 onClick={() => setOpen(false)}
@@ -199,7 +196,7 @@ export default function Navbar() {
                 )}
               >
                 <Sparkle weight="fill" className="size-4" />
-                Post a job — it’s free
+                Post a job
                 <ArrowRight className="size-4" />
               </Link>
             </div>
