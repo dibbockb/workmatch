@@ -34,6 +34,9 @@
 				"useImportType": "off",
 				"noNonNullAssertion": "off",
 				"useNodejsImportProtocol": "off"
+			},
+			"a11y": {
+				"useValidAriaRole": "off"
 			}
 		}
 	},
