@@ -191,7 +191,7 @@ export default function ClientOverviewPage() {
                 href={a.href}
                 className="flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors hover:bg-muted/50 focus-visible:bg-muted/50 focus-visible:outline-none"
               >
-                <a.icon className="size-[18px] text-muted-foreground" />
+                <a.icon className="size-4.5 text-muted-foreground" />
                 {a.label}
               </Link>
             </li>
