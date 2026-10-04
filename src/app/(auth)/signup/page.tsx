@@ -25,6 +25,18 @@ import {
   Palette,
   ShieldCheck,
 } from "@phosphor-icons/react";
+import { ZodError } from "zod";
+import { useRouter } from "next/navigation";
+import { useLogin, useRegister } from "@/app/features/auth/queries";
+
+function getErrorMessage(error: unknown) {
+  if (error instanceof ZodError) return error.issues[0]?.message ?? "Invalid input.";
+  const e = error as { data?: { message?: string }; statusCode?: number };
+  if (e?.data?.message) return e.data.message;
+  if (e?.statusCode === 409) return "An account with this email already exists.";
+  return "Something went wrong. Please try again.";
+}
+
 
 const ROLE_ICONS: Record<DemoRole, typeof ShieldCheck> = {
   admin: ShieldCheck,
@@ -40,36 +52,45 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [role, setRole] = useState<SignupRole>("client");
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [loadingRole, setLoadingRole] = useState<DemoRole | "form" | null>(
-    null
-  );
   const [notice, setNotice] = useState<string | null>(null);
+  const router = useRouter();
+  const registerMutation = useRegister();
+  const loginMutation = useLogin();
+  const [loadingRole, setLoadingRole] = useState<DemoRole | "form" | null>(null);
+  const loading = registerMutation.isPending || loginMutation.isPending || registerMutation.isSuccess || loginMutation.isSuccess;
+  const error = registerMutation.error ?? loginMutation.error;
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
-    setLoading(true);
     setLoadingRole("form");
-    setNotice(null);
-    // TODO: connect backend — POST name/email/password/role, create session.
-    await fakeAuthRequest();
-    setLoading(false);
-    setLoadingRole(null);
+    try {
+      await registerMutation.mutateAsync({
+        name, email, password,
+        role: role.toUpperCase() as "CLIENT" | "FREELANCER",
+      });
+      router.replace("/dashboard");
+      router.refresh();
+    } catch {
+      setLoadingRole(null);
+    }
   }
+
 
   async function handleDemoLogin(demoRole: DemoRole) {
     if (loading) return;
     const account = DEMO_ACCOUNTS[demoRole];
     setEmail(account.email);
     setPassword(account.password);
-    setLoading(true);
     setLoadingRole(demoRole);
-    setNotice(null);
-    // TODO: connect backend — POST demo credentials, redirect by role.
-    await fakeAuthRequest();
-    setLoading(false);
-    setLoadingRole(null);
+    try {
+      await loginMutation.mutateAsync({ email: account.email, password: account.password });
+      router.replace("/dashboard");
+      router.refresh();
+    } catch {
+      setLoadingRole(null);
+    }
   }
 
   return (
@@ -264,10 +285,10 @@ export default function SignupPage() {
             })}
           </div>
 
-          {notice && (
-            <p className="mt-4 flex items-start gap-2 rounded-2xl border border-border bg-muted/60 px-4 py-3 text-[13px] leading-relaxed text-muted-foreground">
-              <Info className="mt-0.5 size-4 shrink-0 text-primary" />
-              {notice}
+          {error && (
+            <p role="alert" className="mt-4 flex items-start gap-2 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-[13px] text-destructive">
+              <Info className="mt-0.5 size-4 shrink-0" />
+              {getErrorMessage(error)}
             </p>
           )}
 

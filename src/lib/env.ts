@@ -1,0 +1,11 @@
+import { z } from "zod";
+
+const envSchema = z.object({
+  NEXT_PUBLIC_SERVER_URL: z
+    .string()
+    .min(1, "NEXT_PUBLIC_SERVER_URL is missing. Add it to .env.local"),
+});
+
+export const env = envSchema.parse({
+  NEXT_PUBLIC_SERVER_URL: process.env.NEXT_PUBLIC_SERVER_URL,
+});

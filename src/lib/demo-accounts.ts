@@ -6,17 +6,17 @@ export const DEMO_ACCOUNTS: Record<
 > = {
   admin: {
     label: "Admin",
-    email: "admin@workmatch.dibbockb.com",
+    email: "admin@workmatch.com",
     password: "!123QWEe",
   },
   client: {
     label: "Client",
-    email: "client@workmatch.dibbockb.com",
+    email: "client@workmatch.com",
     password: "!123QWEe",
   },
   freelancer: {
     label: "Freelancer",
-    email: "freelancer@workmatch.dibbockb.com",
+    email: "freelancer@workmatch.com",
     password: "!123QWEe",
   },
 };

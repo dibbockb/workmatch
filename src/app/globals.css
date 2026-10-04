@@ -199,10 +199,8 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     /* Subtle dot pattern instead of flat white — theme foreground at 6% */
-    background-image: radial-gradient(
-      color-mix(in oklch, var(--foreground) 6%, transparent) 1px,
-      transparent 1.4px
-    );
+    background-image: radial-gradient(color-mix(in oklch, var(--foreground) 6%, transparent) 1px,
+        transparent 1.4px);
     background-size: 22px 22px;
   }
 
@@ -224,25 +222,31 @@
     from {
       transform: translateX(0);
     }
+
     to {
       transform: translateX(-50%);
     }
   }
+
   @keyframes float-slow {
+
     0%,
     100% {
       transform: translateY(0px);
     }
+
     50% {
       transform: translateY(-12px);
     }
   }
+
   @keyframes rise {
     from {
       opacity: 0;
       transform: translateY(24px) scale(0.98);
       filter: blur(6px);
     }
+
     to {
       opacity: 1;
       transform: translateY(0) scale(1);
