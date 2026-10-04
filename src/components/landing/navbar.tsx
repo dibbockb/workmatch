@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import AuthActions, { DASHBOARD_HOME } from "./user-menu";
-import { useMe } from "@/app/features/auth/queries";
+import { useMe } from "@/features/auth/queries";
 // inside Navbar():
 
 const LINKS = [

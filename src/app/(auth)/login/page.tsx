@@ -26,8 +26,8 @@ import {
   Palette,
   ShieldCheck,
 } from "@phosphor-icons/react";
-import { LoginInput, loginSchema } from "@/app/features/auth/schemas";
-import { useLogin } from "@/app/features/auth/queries";
+import { LoginInput, loginSchema } from "@/features/auth/schemas";
+import { useLogin } from "@/features/auth/queries";
 
 const ROLE_ICONS: Record<DemoRole, typeof ShieldCheck> = {
   admin: ShieldCheck,

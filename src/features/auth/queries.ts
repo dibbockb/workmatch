@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { getMe, login, logout, register } from "./api"
+import { useRouter } from "next/navigation";
 
 export const authKeys = {
     all: ["auth"] as const,
@@ -46,4 +47,16 @@ export function useLogout() {
             qc.setQueryData(authKeys.me(), null)
         }
     })
+}
+
+export function useSignOut() {
+    const router = useRouter();
+    const qc = useQueryClient();
+    const logout = useLogout();
+
+    async function signOut() {
+        try { await logout.mutateAsync(); }
+        finally { qc.clear(); router.replace("/login"); router.refresh(); }
+    }
+    return { signOut, isPending: logout.isPending };
 }

@@ -11,7 +11,7 @@ import {
 } from "@phosphor-icons/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useLogout, useMe } from "@/app/features/auth/queries";
+import { useLogout, useMe } from "@/features/auth/queries";
 import {
   DropdownMenu,
   DropdownMenuContent,

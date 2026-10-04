@@ -27,7 +27,7 @@ import {
 } from "@phosphor-icons/react";
 import { ZodError } from "zod";
 import { useRouter } from "next/navigation";
-import { useLogin, useRegister } from "@/app/features/auth/queries";
+import { useLogin, useRegister } from "@/features/auth/queries";
 
 function getErrorMessage(error: unknown) {
   if (error instanceof ZodError) return error.issues[0]?.message ?? "Invalid input.";
