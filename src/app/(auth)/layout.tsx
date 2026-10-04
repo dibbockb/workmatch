@@ -21,17 +21,8 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={cn(
-        "h-full antialiased",
-        hankenGrotesk.variable,
-        geistMono.variable
-      )}
-    >
-      <body className="min-h-full flex flex-col font-sans">
-        <Providers>{children}</Providers>
-      </body>
-    </html>
+    <div className="auth-container">
+      {children}
+    </div>
   );
 }

@@ -3,17 +3,16 @@ import { env } from "./env";
 
 const client = ofetch.create({
     baseURL: env.NEXT_PUBLIC_SERVER_URL,
-    // Send the httpOnly auth cookies with every request.
     credentials: "include",
     timeout: 60 * 1000,
-    retry: 0, // retries are TanStack Query's job, not ofetch's
+    retry: 0,
     onResponse({ response }) {
         if (process.env.NODE_ENV === "development") {
             console.log(`[API] ${response.status} ${response.url}`);
         }
     },
     onResponseError({ response }) {
-        console.error(`[API Error] ${response.status} @@@ ${response.url}`);
+        console.log(`[API Error] ${response.status} @@@ ${response.url}`);
     },
 });
 
@@ -21,7 +20,7 @@ const client = ofetch.create({
 const SKIP_REFRESH = new Set([
     "/v1/auth/login",
     "/v1/auth/register",
-    "/v1/auth/refresh",
+    "/v1/auth/refresh-token",
     "/v1/auth/logout",
 ]);
 
@@ -30,7 +29,7 @@ const SKIP_REFRESH = new Set([
 let refreshPromise: Promise<void> | null = null;
 
 function refreshSession(): Promise<void> {
-    refreshPromise ??= client("/v1/auth/refresh", { method: "POST" })
+    refreshPromise ??= client("/v1/auth/refresh-token", { method: "POST" })
         .then(() => undefined)
         .finally(() => {
             refreshPromise = null;
