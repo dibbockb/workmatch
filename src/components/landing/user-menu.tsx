@@ -47,7 +47,6 @@ export default function AuthActions() {
       await logout.mutateAsync();
     } finally {
       qc.clear();
-      router.replace("/login");
       router.refresh();
     }
   }
