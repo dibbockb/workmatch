@@ -12,7 +12,7 @@ export function useMe() {
         queryKey: authKeys.me(),
         queryFn: getMe,
         retry: false,
-        staleTime: 5 * 6 * 1000
+        staleTime: 5 * 60 * 1000
     }
     )
 };

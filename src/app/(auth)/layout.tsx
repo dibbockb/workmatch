@@ -1,27 +1,8 @@
-import type { Metadata } from "next";
-import { Geist_Mono, Hanken_Grotesk } from "next/font/google";
-import { cn } from "@/lib/utils";
-import Providers from "@/providers";
+import { ReactNode } from "react";
 
-const hankenGrotesk = Hanken_Grotesk({
-  variable: "--font-hanken",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-export const metadata: Metadata = {
-  title: "WorkMatch - Hire vetted experts, matched in hours",
-  description:
-    "WorkMatch is the high-trust marketplace where 24,000+ vetted freelancers meet serious teams. Post a brief, get 3 curated matches, pay safely in escrow.",
-};
-
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function AuthLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="auth-container">
+    <div className="flex min-h-screen items-center justify-center p-4">
       {children}
     </div>
   );
