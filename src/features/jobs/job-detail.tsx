@@ -130,7 +130,7 @@ export function JobDetailHero({
 			{/* Top hairline accent */}
 			<div
 				aria-hidden
-				className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary via-primary/60 to-secondary"
+				className="absolute inset-x-0 top-0 h-1 bg-linear-to-r from-primary via-primary/60 to-secondary"
 			/>
 
 			<div className="relative p-6 sm:p-8">
@@ -201,7 +201,7 @@ export function JobDetailHero({
 					</div>
 
 					{actions && (
-						<div className="flex shrink-0 flex-wrap items-center gap-2 lg:max-w-[240px] lg:justify-end">
+						<div className="flex shrink-0 flex-wrap items-center gap-2 lg:max-w-60 lg:justify-end">
 							{actions}
 						</div>
 					)}
