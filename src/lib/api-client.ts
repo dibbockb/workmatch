@@ -55,7 +55,7 @@ export async function apiFetch<T = any>(
             // here, it would loop on /login.
             throw error;
         }
-        return client<T>(url, options); // retry the original request once
+        return client<T>(url, options);
     }
 }
 
