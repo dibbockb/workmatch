@@ -1,79 +1,139 @@
 "use client";
 
+import { FileText } from "@phosphor-icons/react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { HeaderStat, PageHeader } from "@/components/shared/page-header";
+import {
+	JobCard,
+	JobListSkeleton,
+	JobsEmpty,
+	JobsError,
+	JobsPagination,
+	JobsSearch,
+} from "@/features/jobs/job-list";
 import { useMyJobs } from "@/features/jobs/queries";
-import Loading from "@/app/loading";
 
 export default function MyJobsPage() {
-    const router = useRouter();
-    const params = useSearchParams();
-    const search = params.get("search") ?? "";
-    const page = Number(params.get("page") ?? 1);
+	const router = useRouter();
+	const params = useSearchParams();
+	const search = params.get("search") ?? "";
+	const page = Math.max(1, Number(params.get("page") ?? 1) || 1);
 
-    const { data, isLoading, isError, refetch } = useMyJobs({ page });
-    const jobs = data?.data.jobs ?? [];
-    const pagination = data?.data.pagination;
+	// Local mirror of the URL search param so the field stays in sync even
+	// when the URL changes from outside (back/forward navigation).
+	const [query, setQuery] = useState(search);
+	useEffect(() => setQuery(search), [search]);
 
-    function setParam(key: string, value: string) {
-        const next = new URLSearchParams(params);
-        value ? next.set(key, value) : next.delete(key);
-        if (key !== "page") next.delete("page");
-        router.push(`?${next.toString()}`);
-    }
+	const { data, isLoading, isError, isFetching, refetch } = useMyJobs({ page });
+	const jobs = data?.data.jobs ?? [];
+	const pagination = data?.data.pagination;
 
-    return (
-        <div className="space-y-6">
-            <h1 className="text-3xl font-bold tracking-tight">My Jobs</h1>
+	// `my-posted` is paged server-side, so narrow the loaded page locally.
+	const needle = query.trim().toLowerCase();
+	const visibleJobs = needle
+		? jobs.filter((job) => job.title.toLowerCase().includes(needle))
+		: jobs;
 
-            <input
-                defaultValue={search}
-                onChange={(e) => setParam("search", e.target.value)}
-                placeholder="Search jobs..."
-                className="w-full max-w-sm rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm"
-            />
+	function setParam(key: string, value: string) {
+		const next = new URLSearchParams(params);
+		value ? next.set(key, value) : next.delete(key);
+		if (key !== "page") next.delete("page");
+		router.push(`?${next.toString()}`);
+	}
 
-            {isLoading && <Loading></Loading>}
-            {isError && (
-                <div className="text-sm text-destructive">
-                    <p>Could not load jobs.</p>
-                    <button type="button" onClick={() => refetch()} className="underline">
-                        Try again
-                    </button>
-                </div>
-            )}
-            {!isLoading && !isError && jobs.length === 0 && (
-                <p className="text-muted-foreground">No jobs found.</p>
-            )}
-            <ul className="divide-y divide-border rounded-2xl border border-border">
-                {jobs.map((job) => (
-                    <li key={job.id} className="p-4">
-                        <p className="font-semibold">{job.title}</p>
-                        <p className="text-sm text-muted-foreground">
-                            Budget: ${job.budgetMin.toLocaleString()} – $
-                            {job.budgetMax.toLocaleString()} · Status: {job.status}
-                        </p>
-                    </li>
-                ))}
-            </ul>
+	function onSearch(value: string) {
+		setQuery(value);
+		setParam("search", value);
+	}
 
-            <div className="flex gap-2">
-                <button
-                    type="button"
-                    disabled={page <= 1}
-                    onClick={() => setParam("page", String(page - 1))}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm disabled:opacity-40"
-                >
-                    Prev
-                </button>
-                <button
-                    type="button"
-                    disabled={pagination !== undefined && page >= pagination.totalPages}
-                    onClick={() => setParam("page", String(page + 1))}
-                    className="rounded-lg border border-border px-3 py-1.5 text-sm disabled:opacity-40"
-                >
-                    Next
-                </button>
-            </div>
-        </div>
-    );
+	return (
+		<div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
+			<PageHeader
+				title="My jobs"
+				description="Everything you have posted, in one place — keep an eye on each job from open to completed."
+				actions={
+					<HeaderStat
+						value={pagination?.total ?? jobs.length}
+						label="jobs posted"
+						loading={isLoading}
+					/>
+				}
+			/>
+
+			<div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+				<JobsSearch
+					value={query}
+					onChange={onSearch}
+					label="Search your jobs by title"
+				/>
+				{isFetching && !isLoading && (
+					<span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+						<span
+							aria-hidden
+							className="size-1.5 animate-pulse rounded-full bg-primary"
+						/>
+						Updating results…
+					</span>
+				)}
+			</div>
+
+			{isError && <JobsError onRetry={() => refetch()} />}
+
+			{isLoading ? (
+				<JobListSkeleton />
+			) : visibleJobs.length === 0 ? (
+				needle ? (
+					<JobsEmpty
+						title="No jobs match your search"
+						description={`Nothing on this page matches “${query.trim()}”. Try another keyword, or clear the search to see everything.`}
+						action={
+							<Button variant="outline" size="sm" onClick={() => onSearch("")}>
+								Clear search
+							</Button>
+						}
+					/>
+				) : (
+					<JobsEmpty
+						title="You have not posted any jobs yet"
+						description="Jobs you post show up here so you can track proposals, contracts and progress in one place."
+					/>
+				)
+			) : (
+				<ul className="grid gap-3">
+					{visibleJobs.map((job, index) => (
+						<JobCard
+							key={job.id}
+							job={job}
+							index={index}
+							meta={
+								typeof job.proposalCount === "number" ? (
+									<span className="inline-flex items-center gap-1.5 text-muted-foreground">
+										<FileText className="size-4 shrink-0" />
+										<span className="font-medium text-foreground">
+											{job.proposalCount}
+										</span>
+										{job.proposalCount === 1 ? "proposal" : "proposals"}
+									</span>
+								) : undefined
+							}
+						/>
+					))}
+				</ul>
+			)}
+
+			{pagination && (
+				<JobsPagination
+					page={page}
+					totalPages={pagination.totalPages}
+					total={pagination.total}
+					limit={pagination.limit}
+					unit="jobs"
+					disabled={isFetching}
+					onChange={(next) => setParam("page", String(next))}
+				/>
+			)}
+		</div>
+	);
 }

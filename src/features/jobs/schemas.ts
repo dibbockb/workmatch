@@ -6,6 +6,16 @@ export const jobSchema = z.object({
 	budgetMin: z.coerce.number(),
 	budgetMax: z.coerce.number(),
 	status: z.string(),
+	// Display-only extras — every field is optional so a lean payload still parses.
+	requiredSkills: z.array(z.string()).optional(),
+	deadline: z.string().nullish(),
+	proposalCount: z.coerce.number().optional(),
+	client: z
+		.object({
+			name: z.string().optional(),
+			profileImageUrl: z.string().nullish(),
+		})
+		.optional(),
 });
 
 export type Job = z.infer<typeof jobSchema>;

@@ -9,13 +9,13 @@ export async function getJobs(params: { search?: string; page?: number }) {
 	}
 	qs.set("page", String(params.page ?? 1));
 
-	return await apiFetch<JobsResponse>(`/v1/jobs?${qs.toString()}`).then((response) =>
-		jobsResponseSchema.parse(response),
+	return await apiFetch<JobsResponse>(`/v1/jobs?${qs.toString()}`).then(
+		(response) => jobsResponseSchema.parse(response),
 	);
 }
 
 export async function getMyJobs(params: { page?: number }) {
 	const qs = new URLSearchParams();
 	qs.set("page", String(params.page ?? 1));
-	return apiFetch<JobsResponse>(`/v1/jobs/my-posted?${qs.toString()}`)
+	return apiFetch<JobsResponse>(`/v1/jobs/my-posted?${qs.toString()}`);
 }

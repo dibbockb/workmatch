@@ -10,7 +10,7 @@ export function useJobs(params: { search?: string; page?: number }) {
 
 export function useMyJobs(params: { page?: number }) {
 	return useQuery({
-		queryKey: ['myJobs', params],
-		queryFn: () => getMyJobs(params)
-	})
+		queryKey: ["myJobs", params],
+		queryFn: () => getMyJobs(params),
+	});
 }
