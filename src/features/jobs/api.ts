@@ -1,5 +1,5 @@
 import apiFetch from "@/lib/api-client";
-import { JobsResponse, jobsResponseSchema } from "./schemas";
+import { Job, JobsResponse, jobsResponseSchema } from "./schemas";
 import { useQuery } from "@tanstack/react-query";
 
 export async function getJobs(params: { search?: string; page?: number }) {
@@ -18,4 +18,24 @@ export async function getMyJobs(params: { page?: number }) {
 	const qs = new URLSearchParams();
 	qs.set("page", String(params.page ?? 1));
 	return apiFetch<JobsResponse>(`/v1/jobs/my-posted?${qs.toString()}`);
+}
+
+export async function getJobById(jobId: string) {
+	return apiFetch<Job>(`/v1/jobs/${jobId}`)
+}
+
+export async function updateJob(jobId: string, body: Record<string, unknown>) {
+	return apiFetch<Job>(`/v1/jobs/${jobId}`,
+		{
+			method: "PATCH",
+			body: JSON.stringify(body)
+		})
+}
+
+export async function deleteJob(jobId: string) {
+	return apiFetch<void>(`/v1/jobs/${jobId}`, { method: "DELETE" });
+}
+
+export async function closeJob(jobId: string) {
+	return apiFetch<void>(`/v1/jobs/${jobId}/close`, { method: "POST" });
 }
