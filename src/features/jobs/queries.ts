@@ -1,11 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { closeJob, deleteJob, getJobs, getMyJobs } from "./api";
+import { closeJob, deleteJob, getJobById, getJobs, getMyJobs } from "./api";
 
 export function useJobs(params: { search?: string; page?: number }) {
 	return useQuery({
 		queryKey: ["jobs", params],
 		queryFn: () => getJobs(params),
 	});
+}
+
+export function useJob(jobId: string) {
+	return useQuery({ queryKey: ["job", jobId], queryFn: () => getJobById(jobId) });
 }
 
 export function useMyJobs(params: { page?: number }) {
