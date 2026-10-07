@@ -3,13 +3,18 @@ import { z } from "zod";
 export const jobSchema = z.object({
 	id: z.string(),
 	title: z.string(),
+	description: z.string().nullish(),
 	budgetMin: z.coerce.number(),
 	budgetMax: z.coerce.number(),
 	status: z.string(),
 	// Display-only extras — every field is optional so a lean payload still parses.
 	requiredSkills: z.array(z.string()).optional(),
 	deadline: z.string().nullish(),
+	duration: z.string().nullish(),
+	experienceLevel: z.string().nullish(),
 	proposalCount: z.coerce.number().optional(),
+	createdAt: z.string().nullish(),
+	updatedAt: z.string().nullish(),
 	client: z
 		.object({
 			name: z.string().optional(),

@@ -9,6 +9,7 @@ import {
 	X,
 } from "@phosphor-icons/react";
 import type { ReactNode } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -65,13 +66,16 @@ export function JobCard({
 	job,
 	index = 0,
 	meta,
+	href,
 }: {
 	job: JobSummary;
 	index?: number;
 	meta?: ReactNode;
+	href?: string;
 }) {
 	const skills = job.requiredSkills ?? [];
 	const deadline = formatDeadline(job.deadline);
+	const clickable = Boolean(href);
 
 	return (
 		<li
@@ -84,8 +88,18 @@ export function JobCard({
 					"transition-all duration-300 ease-snappy",
 					"hover:-translate-y-1 hover:border-primary/35 hover:shadow-lg",
 					"focus-within:border-primary/35 motion-reduce:transition-none motion-reduce:hover:translate-y-0",
+					clickable && "cursor-pointer",
 				)}
 			>
+				{clickable && href && (
+					<Link
+						href={href}
+						aria-label={`View ${job.title}`}
+						className="absolute inset-0 z-10 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+					>
+						<span className="sr-only">View {job.title}</span>
+					</Link>
+				)}
 				{/* Left accent rail — grows in on hover */}
 				<span
 					aria-hidden

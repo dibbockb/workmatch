@@ -21,8 +21,6 @@ export default function FindWorkPage() {
 	const search = params.get("search") ?? "";
 	const page = Math.max(1, Number(params.get("page") ?? 1) || 1);
 
-	// Local mirror of the URL search param so the field stays in sync even
-	// when the URL changes from outside (back/forward navigation).
 	const [query, setQuery] = useState(search);
 	useEffect(() => setQuery(search), [search]);
 
@@ -104,15 +102,16 @@ export default function FindWorkPage() {
 							key={job.id}
 							job={job}
 							index={index}
+							href={`/dashboard/freelancer/jobs/${job.id}`}
 							meta={
-								job.client?.name ? (
-									<span className="inline-flex min-w-0 items-center gap-1.5 text-muted-foreground">
-										<UsersThree className="size-4 shrink-0" />
-										<span className="truncate">{job.client.name}</span>
-									</span>
-								) : undefined
-							}
-						/>
+									job.client?.name ? (
+										<span className="inline-flex min-w-0 items-center gap-1.5 text-muted-foreground">
+											<UsersThree className="size-4 shrink-0" />
+											<span className="truncate">{job.client.name}</span>
+										</span>
+									) : undefined
+								}
+							/>
 					))}
 				</ul>
 			)}

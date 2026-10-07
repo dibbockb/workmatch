@@ -107,6 +107,7 @@ export default function MyJobsPage() {
 							key={job.id}
 							job={job}
 							index={index}
+							href={`/dashboard/client/jobs/${job.id}`}
 							meta={
 								typeof job.proposalCount === "number" ? (
 									<span className="inline-flex items-center gap-1.5 text-muted-foreground">
