@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText } from "@phosphor-icons/react";
+import { FileText, Plus } from "@phosphor-icons/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,10 @@ import {
 	JobsPagination,
 	JobsSearch,
 } from "@/features/jobs/job-list";
+import { NewJobButton } from "@/features/jobs/job-form";
 import { useMyJobs } from "@/features/jobs/queries";
+
+export const NEW_JOB_HREF = "/dashboard/client/jobs/new";
 
 export default function MyJobsPage() {
 	const router = useRouter();
@@ -48,17 +51,24 @@ export default function MyJobsPage() {
 		setParam("search", value);
 	}
 
+	function goToNewJob() {
+		router.push(NEW_JOB_HREF);
+	}
+
 	return (
 		<div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
 			<PageHeader
 				title="My jobs"
 				description="Everything you have posted, in one place — keep an eye on each job from open to completed."
 				actions={
-					<HeaderStat
-						value={pagination?.total ?? jobs.length}
-						label="jobs posted"
-						loading={isLoading}
-					/>
+					<>
+						<HeaderStat
+							value={pagination?.total ?? jobs.length}
+							label="jobs posted"
+							loading={isLoading}
+						/>
+						<NewJobButton onClick={goToNewJob} />
+					</>
 				}
 			/>
 
@@ -68,15 +78,27 @@ export default function MyJobsPage() {
 					onChange={onSearch}
 					label="Search your jobs by title"
 				/>
-				{isFetching && !isLoading && (
-					<span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
-						<span
-							aria-hidden
-							className="size-1.5 animate-pulse rounded-full bg-primary"
-						/>
-						Updating results…
-					</span>
-				)}
+				<div className="flex items-center justify-between gap-3 sm:justify-end">
+					{isFetching && !isLoading && (
+						<span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+							<span
+								aria-hidden
+								className="size-1.5 animate-pulse rounded-full bg-primary"
+							/>
+							Updating results…
+						</span>
+					)}
+					<Button
+						type="button"
+						variant="outline"
+						size="sm"
+						onClick={goToNewJob}
+						className="sm:hidden"
+					>
+						<Plus className="size-3.5" data-icon="inline-start" />
+						New job
+					</Button>
+				</div>
 			</div>
 
 			{isError && <JobsError onRetry={() => refetch()} />}
@@ -98,6 +120,12 @@ export default function MyJobsPage() {
 					<JobsEmpty
 						title="You have not posted any jobs yet"
 						description="Jobs you post show up here so you can track proposals, contracts and progress in one place."
+						action={
+							<Button size="sm" onClick={goToNewJob}>
+								<Plus className="size-3.5" data-icon="inline-start" />
+								Post your first job
+							</Button>
+						}
 					/>
 				)
 			) : (

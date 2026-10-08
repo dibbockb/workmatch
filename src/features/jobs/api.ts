@@ -21,15 +21,21 @@ export async function getMyJobs(params: { page?: number }) {
 }
 
 export async function getJobById(jobId: string) {
-	return apiFetch<Job>(`/v1/jobs/${jobId}`)
+	return apiFetch<Job>(`/v1/jobs/${jobId}`);
+}
+
+export async function createJob(body: Record<string, unknown>) {
+	return apiFetch<Job>(`/v1/jobs`, {
+		method: "POST",
+		body: JSON.stringify(body),
+	});
 }
 
 export async function updateJob(jobId: string, body: Record<string, unknown>) {
-	return apiFetch<Job>(`/v1/jobs/${jobId}`,
-		{
-			method: "PATCH",
-			body: JSON.stringify(body)
-		})
+	return apiFetch<Job>(`/v1/jobs/${jobId}`, {
+		method: "PATCH",
+		body: JSON.stringify(body),
+	});
 }
 
 export async function deleteJob(jobId: string) {

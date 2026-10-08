@@ -6,22 +6,18 @@ import {
 	CheckCircle,
 	CurrencyDollar,
 	FileText,
-	FloppyDisk,
 	Gauge,
 	PencilSimple,
 	Prohibit,
 	Trash,
 	UsersThree,
-	X,
 } from "@phosphor-icons/react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
-import { updateJob } from "@/features/jobs/api";
+import { ConfirmJobDialog, EditJobDialog } from "@/features/jobs/job-form";
 import {
 	DetailSection,
 	DetailSidebarCard,
@@ -39,33 +35,40 @@ import {
 import { formatBudget } from "@/features/jobs/job-list";
 import { useCloseJob, useDeleteJob, useJob } from "@/features/jobs/queries";
 
+function getErrorMessage(error: unknown, fallback: string) {
+	if (error && typeof error === "object") {
+		const withResponse = error as {
+			response?: { _data?: { message?: unknown } };
+			data?: { message?: unknown };
+		};
+		const fromResponse = withResponse.response?._data?.message;
+		if (typeof fromResponse === "string" && fromResponse.trim()) {
+			return fromResponse;
+		}
+		if (Array.isArray(fromResponse) && fromResponse.length > 0) {
+			return String(fromResponse[0]);
+		}
+		const fromData = withResponse.data?.message;
+		if (typeof fromData === "string" && fromData.trim()) return fromData;
+		if (error instanceof Error && error.message) return error.message;
+	}
+	return fallback;
+}
+
 export default function ClientJobDetailPage() {
 	const { jobId } = useParams<{ jobId: string }>();
 	const router = useRouter();
-	const qc = useQueryClient();
 	const { data: raw, isLoading, isError, refetch } = useJob(jobId);
 	const deleteJob = useDeleteJob();
 	const closeJob = useCloseJob();
 
-	const [confirmingDelete, setConfirmingDelete] = useState(false);
 	const [editing, setEditing] = useState(false);
-	const [title, setTitle] = useState("");
+	const [confirmingDelete, setConfirmingDelete] = useState(false);
+	const [confirmingClose, setConfirmingClose] = useState(false);
+	const [deleteError, setDeleteError] = useState<string | null>(null);
+	const [closeError, setCloseError] = useState<string | null>(null);
 
 	const job = normalizeJob(raw);
-	const jobTitle = job?.title ?? "";
-
-	useEffect(() => {
-		if (!editing && jobTitle) setTitle(jobTitle);
-	}, [jobTitle, editing]);
-
-	const updateMutation = useMutation({
-		mutationFn: () => updateJob(jobId, { title: title.trim() }),
-		onSuccess: () => {
-			qc.invalidateQueries({ queryKey: ["job", jobId] });
-			qc.invalidateQueries({ queryKey: ["myJobs"] });
-			setEditing(false);
-		},
-	});
 
 	if (isLoading) {
 		return <JobDetailSkeleton backLabel="Back to My jobs" />;
@@ -95,18 +98,34 @@ export default function ClientJobDetailPage() {
 
 	const isClosed = job.status === "CLOSED";
 	const experience = formatExperience(job.experienceLevel);
-	const canSave =
-		title.trim().length > 0 &&
-		title.trim() !== job.title &&
-		!updateMutation.isPending;
 
 	function handleDelete() {
-		if (!confirmingDelete) {
-			setConfirmingDelete(true);
-			return;
-		}
+		setDeleteError(null);
 		deleteJob.mutate(jobId, {
-			onSuccess: () => router.push("/dashboard/client/jobs"),
+			onSuccess: () => {
+				toast.success("Job deleted.");
+				router.push("/dashboard/client/jobs");
+			},
+			onError: (error) => {
+				setDeleteError(
+					getErrorMessage(error, "Could not delete the job. Try again."),
+				);
+			},
+		});
+	}
+
+	function handleClose() {
+		setCloseError(null);
+		closeJob.mutate(jobId, {
+			onSuccess: () => {
+				toast.success("Applications closed.");
+				setConfirmingClose(false);
+			},
+			onError: (error) => {
+				setCloseError(
+					getErrorMessage(error, "Could not close the job. Try again."),
+				);
+			},
 		});
 	}
 
@@ -123,22 +142,18 @@ export default function ClientJobDetailPage() {
 							type="button"
 							variant="outline"
 							size="lg"
-							onClick={() => setEditing((v) => !v)}
+							onClick={() => setEditing(true)}
 							className="bg-background/70 backdrop-blur"
 						>
-							{editing ? (
-								<X className="size-4" data-icon="inline-start" />
-							) : (
-								<PencilSimple className="size-4" data-icon="inline-start" />
-							)}
-							{editing ? "Cancel" : "Edit"}
+							<PencilSimple className="size-4" data-icon="inline-start" />
+							Edit
 						</Button>
 						<Button
 							type="button"
 							size="lg"
 							variant="secondary"
 							disabled={isClosed || closeJob.isPending}
-							onClick={() => closeJob.mutate(jobId)}
+							onClick={() => setConfirmingClose(true)}
 							className="shadow-xs"
 						>
 							<Prohibit className="size-4" data-icon="inline-start" />
@@ -151,63 +166,6 @@ export default function ClientJobDetailPage() {
 					</>
 				}
 			/>
-
-			{/* Title editor */}
-			{editing && (
-				<div className="rounded-3xl border border-primary/30 bg-card p-5 shadow-xs animate-rise motion-reduce:animate-none sm:p-6">
-					<form
-						onSubmit={(e) => {
-							e.preventDefault();
-							if (canSave) updateMutation.mutate();
-						}}
-						className="flex flex-col gap-3"
-					>
-						<Label htmlFor="jobTitle">Job title</Label>
-						<div className="flex flex-col gap-2 sm:flex-row">
-							<Input
-								id="jobTitle"
-								value={title}
-								autoFocus
-								onChange={(e) => setTitle(e.target.value)}
-								placeholder="e.g. Setup WordPress Blog"
-								maxLength={120}
-								className="h-10 flex-1 rounded-xl shadow-xs"
-							/>
-							<div className="flex shrink-0 gap-2">
-								<Button
-									type="button"
-									variant="outline"
-									onClick={() => {
-										setTitle(job.title);
-										setEditing(false);
-										updateMutation.reset();
-									}}
-								>
-									Cancel
-								</Button>
-								<Button type="submit" disabled={!canSave}>
-									<FloppyDisk className="size-4" data-icon="inline-start" />
-									{updateMutation.isPending ? "Saving…" : "Save"}
-								</Button>
-							</div>
-						</div>
-						{updateMutation.isError && (
-							<p role="alert" className="text-sm text-destructive">
-								Could not save the new title. Try again.
-							</p>
-						)}
-						{updateMutation.isSuccess && (
-							<p
-								role="status"
-								className="inline-flex items-center gap-1.5 text-sm text-emerald-600 dark:text-emerald-400"
-							>
-								<CheckCircle className="size-4" />
-								Title updated.
-							</p>
-						)}
-					</form>
-				</div>
-			)}
 
 			{/* Pipeline strip */}
 			<div className="grid grid-cols-2 gap-3 animate-rise motion-reduce:animate-none lg:grid-cols-4">
@@ -264,6 +222,17 @@ export default function ClientJobDetailPage() {
 						title="About this job"
 						hint="Exactly what freelancers see when they open your posting"
 						delay={60}
+						action={
+							<Button
+								type="button"
+								variant="outline"
+								size="sm"
+								onClick={() => setEditing(true)}
+							>
+								<PencilSimple className="size-3.5" data-icon="inline-start" />
+								Edit brief
+							</Button>
+						}
 					>
 						{job.description ? (
 							<p className="text-[0.9375rem] leading-relaxed whitespace-pre-line text-foreground/90">
@@ -272,8 +241,7 @@ export default function ClientJobDetailPage() {
 						) : (
 							<div className="rounded-2xl border border-dashed border-border bg-muted/40 p-5 text-sm text-muted-foreground">
 								No written brief yet. Add scope, deliverables and milestones so
-								proposals come back sharp — use Edit above to refine the title
-								first.
+								proposals come back sharp — use Edit above to fill it in.
 							</div>
 						)}
 
@@ -346,16 +314,25 @@ export default function ClientJobDetailPage() {
 						title="Manage this job"
 						description={
 							isClosed
-								? "This posting is closed — reopen it by editing, or remove it for good."
-								: "Close applications when you have enough pitches to review."
+								? "This posting is closed — edit the brief, or remove it for good."
+								: "Refine the brief, or close applications once shortlisting starts."
 						}
 					>
 						<div className="flex flex-col gap-2.5">
 							<Button
 								type="button"
+								variant="outline"
+								onClick={() => setEditing(true)}
+								className="w-full"
+							>
+								<PencilSimple className="size-4" data-icon="inline-start" />
+								Edit job
+							</Button>
+							<Button
+								type="button"
 								variant="secondary"
 								disabled={isClosed || closeJob.isPending}
-								onClick={() => closeJob.mutate(jobId)}
+								onClick={() => setConfirmingClose(true)}
 								className="w-full"
 							>
 								<Prohibit className="size-4" data-icon="inline-start" />
@@ -365,7 +342,7 @@ export default function ClientJobDetailPage() {
 										? "Job closed"
 										: "Close job"}
 							</Button>
-							{closeJob.isError && (
+							{closeJob.isError && !confirmingClose && (
 								<p role="alert" className="text-sm text-destructive">
 									Could not close the job. Try again.
 								</p>
@@ -395,45 +372,64 @@ export default function ClientJobDetailPage() {
 							Danger zone
 						</h2>
 						<p className="mt-1 text-sm text-muted-foreground">
-							{confirmingDelete
-								? "This permanently removes the posting. This can't be undone."
-								: "Delete the posting and all of its proposals."}
+							Delete the posting and all of its proposals.
 						</p>
 						<Separator className="my-4 bg-destructive/20" />
-						<div className="flex flex-col gap-2">
-							{confirmingDelete && (
-								<Button
-									type="button"
-									variant="outline"
-									size="sm"
-									onClick={() => setConfirmingDelete(false)}
-								>
-									Keep my posting
-								</Button>
-							)}
-							<Button
-								type="button"
-								variant="destructive"
-								disabled={deleteJob.isPending}
-								onClick={handleDelete}
-								className="w-full"
-							>
-								<Trash className="size-4" data-icon="inline-start" />
-								{deleteJob.isPending
-									? "Deleting…"
-									: confirmingDelete
-										? "Yes, delete it"
-										: "Delete job"}
-							</Button>
-							{deleteJob.isError && (
-								<p role="alert" className="text-sm text-destructive">
-									Could not delete the job. Try again.
-								</p>
-							)}
-						</div>
+						<Button
+							type="button"
+							variant="destructive"
+							disabled={deleteJob.isPending}
+							onClick={() => {
+								setDeleteError(null);
+								setConfirmingDelete(true);
+							}}
+							className="w-full"
+						>
+							<Trash className="size-4" data-icon="inline-start" />
+							Delete job
+						</Button>
 					</aside>
 				</div>
 			</div>
+
+			<EditJobDialog
+				open={editing}
+				onClose={() => setEditing(false)}
+				job={job}
+			/>
+
+			<ConfirmJobDialog
+				open={confirmingClose}
+				onClose={() => {
+					setConfirmingClose(false);
+					setCloseError(null);
+					closeJob.reset();
+				}}
+				title={isClosed ? "Job already closed" : "Close this job?"}
+				description="New proposals stop immediately. You keep every pitch received so far."
+				confirmLabel="Yes, close it"
+				pendingLabel="Closing…"
+				loading={closeJob.isPending}
+				error={closeError}
+				onConfirm={handleClose}
+			/>
+
+			<ConfirmJobDialog
+				open={confirmingDelete}
+				onClose={() => {
+					setConfirmingDelete(false);
+					setDeleteError(null);
+					deleteJob.reset();
+				}}
+				title="Delete this job?"
+				description={`“${job.title}” will be removed for everyone.`}
+				confirmLabel="Yes, delete it"
+				pendingLabel="Deleting…"
+				danger
+				loading={deleteJob.isPending}
+				error={deleteError}
+				onConfirm={handleDelete}
+			/>
 		</JobDetailShell>
 	);
 }

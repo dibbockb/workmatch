@@ -4,6 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/providers";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistMono = Geist_Mono({
 	variable: "--font-geist-mono",
@@ -26,6 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			<Providers>
 				<body className="min-h-full flex flex-col">
 					<ThemeProvider>{children}</ThemeProvider>
+					<Toaster position="bottom-right" richColors closeButton />
 				</body>
 			</Providers>
 		</html>
