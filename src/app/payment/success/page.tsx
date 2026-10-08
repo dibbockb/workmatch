@@ -133,7 +133,6 @@ function PaymentSuccessInner() {
 				your receipt shortly.
 			</p>
 
-			{/* receipt strip */}
 			<div className="mt-6 flex w-full items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3.5 shadow-xs animate-rise motion-reduce:animate-none">
 				<span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary/60 text-secondary-foreground ring-1 ring-black/5">
 					<Wallet className="size-5" />
@@ -214,8 +213,8 @@ export default function PaymentSuccessPage() {
 		<main className="relative isolate flex min-h-dvh items-center justify-center overflow-hidden px-4 py-12">
 			{/* premium backdrop */}
 			<div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-				<div className="absolute top-[-8rem] left-1/2 h-96 w-[42rem] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
-				<div className="absolute bottom-[-10rem] left-[8%] size-96 rounded-full bg-secondary/50 blur-3xl" />
+				<div className="absolute -top-32 left-1/2 h-96 w-2xl -translate-x-1/2 rounded-full bg-primary/15 blur-3xl" />
+				<div className="absolute -bottom-40 left-[8%] size-96 rounded-full bg-secondary/50 blur-3xl" />
 				<div className="absolute right-[6%] bottom-[12%] size-72 rounded-full bg-emerald-500/10 blur-3xl" />
 			</div>
 			<Suspense>

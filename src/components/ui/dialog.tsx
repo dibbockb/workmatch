@@ -33,7 +33,7 @@ function DialogOverlay({
 	return (
 		<DialogPrimitive.Backdrop
 			className={cn(
-				"fixed inset-0 z-50 bg-black/55 backdrop-blur-[2px] transition-opacity duration-200 data-[ending-style]:opacity-0 data-[starting-style]:opacity-0",
+				"fixed inset-0 z-50 bg-black/55 backdrop-blur-[2px] transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
 				className,
 			)}
 			{...props}
@@ -53,7 +53,7 @@ function DialogContent({
 			<div className="fixed inset-0 z-50 flex items-end justify-center p-3 sm:items-center sm:p-6">
 				<DialogPrimitive.Popup
 					className={cn(
-						"relative flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl transition-all duration-200 ease-snappy data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0",
+						"relative flex max-h-[92dvh] w-full max-w-md flex-col overflow-hidden rounded-3xl border border-border bg-card shadow-2xl transition-all duration-200 ease-snappy data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0",
 						className,
 					)}
 					{...props}

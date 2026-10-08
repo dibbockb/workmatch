@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
 import { useAcceptProposal } from "@/features/contracts/queries";
+import { getCheckoutUrl } from "@/features/contracts/api";
 import { DetailSection, DetailStat } from "@/features/jobs/job-detail";
 import {
 	useJobProposals,
@@ -212,14 +213,21 @@ export function AcceptProposalDialog({
 		if (!proposal) return;
 		setError(null);
 		accept.mutate(proposal.id, {
-			onSuccess: () => {
-				toast.success("Proposal accepted.");
-				close();
+			onSuccess: (response) => {
+				const checkoutUrl = getCheckoutUrl(response);
+				if (!checkoutUrl) {
+					setError(
+						"Checkout started but no payment link was returned. Try again.",
+					);
+					return;
+				}
+				toast.success("Redirecting to secure checkout…");
+				// Stripe Checkout is an external page — full same-tab navigation
+				// so its success redirect can return here afterwards.
+				window.location.assign(checkoutUrl);
 			},
 			onError: (err) => {
-				setError(
-					getErrorMessage(err, "Could not accept the proposal. Try again."),
-				);
+				setError(getErrorMessage(err, "Could not start checkout. Try again."));
 			},
 		});
 	}
@@ -237,7 +245,7 @@ export function AcceptProposalDialog({
 						Accept {proposal?.freelancer?.name ?? "this freelancer"}?
 					</DialogTitle>
 					<DialogDescription>
-						A contract starts immediately on accept.
+						You&apos;ll continue to Stripe to fund escrow.
 					</DialogDescription>
 				</DialogHeader>
 				<DialogBody className="flex flex-col gap-4">
@@ -256,20 +264,20 @@ export function AcceptProposalDialog({
 						</div>
 					)}
 					<div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm leading-relaxed text-foreground/90">
-						Accepting creates the contract and moves the job to{" "}
-						<strong>In progress</strong>.
+						You&apos;ll be redirected to Stripe&apos;s secure checkout to pay.{" "}
+						Once payment completes, the contract is created, the job moves to{" "}
+						<strong>In progress</strong>
 						{othersPending > 0 ? (
 							<>
-								{" "}
-								The other{" "}
+								, and the other{" "}
 								<strong>
 									{othersPending} pending{" "}
 									{othersPending === 1 ? "proposal" : "proposals"}
 								</strong>{" "}
-								will be automatically rejected.
+								are automatically rejected.
 							</>
 						) : (
-							" There are no other pending proposals."
+							"."
 						)}
 					</div>
 					{error && (
@@ -290,12 +298,12 @@ export function AcceptProposalDialog({
 									aria-hidden
 									className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
 								/>
-								Accepting…
+								Preparing checkout…
 							</span>
 						) : (
 							<>
 								<CheckCircle className="size-4" data-icon="inline-start" />
-								Accept & create contract
+								Accept & continue to payment
 							</>
 						)}
 					</Button>
@@ -410,7 +418,7 @@ export function ProposalReviewSection({
 		: null;
 	const othersPending = selected
 		? proposals.filter((p) => p.id !== selected.id && p.status === "PENDING")
-			.length
+				.length
 		: 0;
 
 	return (
