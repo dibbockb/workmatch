@@ -180,8 +180,6 @@ export default function JobDetailPage() {
 						"Something went wrong sending your proposal. Check the fields and try again.",
 					);
 					setSubmitError(message);
-					// A 409 here means a proposal already exists (e.g. sent in
-					// another tab) — refresh so the page flips to its state.
 					if (/already submitted|already proposed/i.test(message)) {
 						toast.info("You have already submitted a proposal for this gig.");
 						refetchMine();
@@ -381,7 +379,7 @@ export default function JobDetailPage() {
 						title={myProposal ? "Your proposal" : "Send a proposal"}
 						description={
 							myProposal
-								? "You have already pitched for this gig — one proposal per job."
+								? "You have already pitched for this gig."
 								: "Stand out with a sharp pitch and a fair price."
 						}
 					>
