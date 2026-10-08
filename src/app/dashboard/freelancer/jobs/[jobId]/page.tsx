@@ -38,6 +38,8 @@ import { formatBudget } from "@/features/jobs/job-list";
 
 export default function JobDetailPage() {
 	const { jobId } = useParams<{ jobId: string }>();
+	const [approachDescription, setApproachDescription] = useState("");
+	const [portfolioLinks, setPortfolioLinks] = useState("");
 	const { data: raw, isLoading, isError, refetch } = useJob(jobId);
 	const {
 		mutate,
@@ -83,11 +85,15 @@ export default function JobDetailPage() {
 		mutate({
 			jobId,
 			coverLetter: coverLetter.trim(),
+			approachDescription: approachDescription.trim(),
 			proposedPrice: Number(proposedPrice),
 			proposedTimeline: Number(proposedTimeline),
+			portfolioLinks: portfolioLinks
+				.split("\n")
+				.map((link) => link.trim())
+				.filter(Boolean),
 		});
 	}
-
 	const canSubmit =
 		coverLetter.trim().length >= 10 &&
 		Number(proposedPrice) > 0 &&
@@ -124,7 +130,6 @@ export default function JobDetailPage() {
 				}
 			/>
 
-			{/* Key facts */}
 			<div className="grid grid-cols-2 gap-3 animate-rise motion-reduce:animate-none lg:grid-cols-4">
 				<div className="rounded-2xl border border-border bg-card p-4 shadow-xs">
 					<p className="inline-flex items-center gap-1.5 text-[0.6875rem] font-semibold tracking-wider text-muted-foreground uppercase">
@@ -171,7 +176,6 @@ export default function JobDetailPage() {
 			</div>
 
 			<div className="grid items-start gap-5 lg:grid-cols-[1fr_360px]">
-				{/* Main column */}
 				<div className="flex min-w-0 flex-col gap-5">
 					<DetailSection
 						icon={<FileText className="size-5" />}
@@ -251,7 +255,6 @@ export default function JobDetailPage() {
 					</DetailSection>
 				</div>
 
-				{/* Sidebar */}
 				<div className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-6">
 					<DetailSidebarCard
 						title="Send a proposal"
@@ -269,7 +272,7 @@ export default function JobDetailPage() {
 									Proposal submitted
 								</p>
 								<p className="mt-1 max-w-[26ch] text-sm text-balance text-emerald-700/80 dark:text-emerald-300/80">
-									The client can now review your pitch. We&apos;ll notify you on
+									The client can now review your pitch. We will notify you on
 									any reply.
 								</p>
 								<Button
@@ -307,6 +310,30 @@ export default function JobDetailPage() {
 										</span>{" "}
 										written
 									</p>
+								</div>
+								<div className="flex flex-col gap-1.5">
+									<Label htmlFor="approachDescription">Your approach</Label>
+									<textarea
+										id="approachDescription"
+										value={approachDescription}
+										onChange={(e) => setApproachDescription(e.target.value)}
+										placeholder="How you'd tackle the first milestone…"
+										rows={3}
+										required
+										className="w-full resize-y rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm leading-relaxed shadow-xs transition-all outline-none placeholder:text-muted-foreground/70 focus-visible:ring-2 focus-visible:ring-ring/70"
+									/>
+								</div>
+
+								<div className="flex flex-col gap-1.5">
+									<Label htmlFor="portfolioLinks">Portfolio links</Label>
+									<textarea
+										id="portfolioLinks"
+										value={portfolioLinks}
+										onChange={(e) => setPortfolioLinks(e.target.value)}
+										placeholder={"One link per line, e.g.\nhttps://github.com/you"}
+										rows={2}
+										className="w-full resize-y rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm leading-relaxed shadow-xs transition-all outline-none placeholder:text-muted-foreground/70 focus-visible:ring-2 focus-visible:ring-ring/70"
+									/>
 								</div>
 
 								<div className="grid grid-cols-2 gap-3">

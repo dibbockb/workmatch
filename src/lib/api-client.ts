@@ -8,7 +8,7 @@ const client = ofetch.create({
     retry: 0,
     onResponse({ response }) {
         if (process.env.NODE_ENV === "development") {
-            console.log(`[API] ${response.status} ${response.url}`);
+            console.log(`[API Response] ${response.status} ${response.url}`);
         }
     },
     onResponseError({ response }) {
