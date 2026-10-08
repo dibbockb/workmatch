@@ -1,6 +1,33 @@
-import { useMutation } from "@tanstack/react-query";
-import { submitProposal } from "./api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getMyProposals, submitProposal, withdrawProposal } from "./api";
 
 export function useSubmitProposal() {
-    return useMutation({ mutationFn: submitProposal });
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: submitProposal,
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: ["myProposals"] });
+		},
+	});
+}
+
+export function useMyProposals(params: {
+	status?: string;
+	page?: number;
+	limit?: number;
+}) {
+	return useQuery({
+		queryKey: ["myProposals", params],
+		queryFn: () => getMyProposals(params),
+	});
+}
+
+export function useWithdrawProposal() {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: withdrawProposal,
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: ["myProposals"] });
+		},
+	});
 }

@@ -11,15 +11,23 @@ import {
 	PaperPlaneTilt,
 	ShieldCheck,
 	Timer,
+	ArrowCounterClockwise,
 } from "@phosphor-icons/react";
-import { useParams } from "next/navigation";
+import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { useJob } from "@/features/jobs/queries";
-import { useSubmitProposal } from "@/features/proposals/queries";
+import {
+	useMyProposals,
+	useSubmitProposal,
+	useWithdrawProposal,
+} from "@/features/proposals/queries";
+import { ProposalStatusBadge } from "@/features/proposals/status";
 import {
 	DetailSection,
 	DetailSidebarCard,
@@ -36,22 +44,58 @@ import {
 } from "@/features/jobs/job-detail";
 import { formatBudget } from "@/features/jobs/job-list";
 
+function getErrorMessage(error: unknown, fallback: string) {
+	if (error && typeof error === "object") {
+		const withResponse = error as {
+			response?: { _data?: { message?: unknown } };
+			data?: { message?: unknown };
+		};
+		const fromResponse = withResponse.response?._data?.message;
+		if (typeof fromResponse === "string" && fromResponse.trim()) {
+			return fromResponse;
+		}
+		if (Array.isArray(fromResponse) && fromResponse.length > 0) {
+			return String(fromResponse[0]);
+		}
+		const fromData = withResponse.data?.message;
+		if (typeof fromData === "string" && fromData.trim()) return fromData;
+		if (error instanceof Error && error.message) return error.message;
+	}
+	return fallback;
+}
+
+function formatSubmitted(iso?: string | null) {
+	if (!iso) return null;
+	const date = new Date(iso);
+	if (Number.isNaN(date.getTime())) return null;
+	return date.toLocaleDateString("en-US", {
+		month: "long",
+		day: "numeric",
+		year: "numeric",
+	});
+}
+
 export default function JobDetailPage() {
 	const { jobId } = useParams<{ jobId: string }>();
+	const router = useRouter();
 	const [approachDescription, setApproachDescription] = useState("");
 	const [portfolioLinks, setPortfolioLinks] = useState("");
-	const { data: raw, isLoading, isError, refetch } = useJob(jobId);
-	const {
-		mutate,
-		isPending,
-		isSuccess,
-		isError: submitFailed,
-		reset,
-	} = useSubmitProposal();
-
 	const [coverLetter, setCoverLetter] = useState("");
 	const [proposedPrice, setProposedPrice] = useState("");
 	const [proposedTimeline, setProposedTimeline] = useState("");
+	const [submitError, setSubmitError] = useState<string | null>(null);
+	const [confirmingWithdraw, setConfirmingWithdraw] = useState(false);
+
+	const { data: raw, isLoading, isError, refetch } = useJob(jobId);
+	const submit = useSubmitProposal();
+	const withdraw = useWithdrawProposal();
+	const { data: myProposalsData, refetch: refetchMine } = useMyProposals({
+		limit: 100,
+	});
+
+	const myProposal = myProposalsData?.data.proposals.find(
+		(p) => p.jobId === jobId,
+	);
 
 	if (isLoading) {
 		return <JobDetailSkeleton backLabel="Back to Find work" />;
@@ -80,25 +124,92 @@ export default function JobDetailPage() {
 		);
 	}
 
-	function handleApply(e: React.FormEvent) {
-		e.preventDefault();
-		mutate({
-			jobId,
-			coverLetter: coverLetter.trim(),
-			approachDescription: approachDescription.trim(),
-			proposedPrice: Number(proposedPrice),
-			proposedTimeline: Number(proposedTimeline),
-			portfolioLinks: portfolioLinks
-				.split("\n")
-				.map((link) => link.trim())
-				.filter(Boolean),
-		});
-	}
+	const timelineDays = Number(proposedTimeline);
+	const price = Number(proposedPrice);
+	// The API stores a single `approachDescription` (20–2000 chars) — the
+	// cover letter and portfolio links are folded into it on submit.
+	const combinedApproach = [
+		coverLetter.trim(),
+		approachDescription.trim(),
+		...(portfolioLinks
+			.split("\n")
+			.map((link) => link.trim())
+			.filter(Boolean).length > 0
+			? [
+				`Portfolio:\n${portfolioLinks
+					.split("\n")
+					.map((link) => link.trim())
+					.filter(Boolean)
+					.join("\n")}`,
+			]
+			: []),
+	]
+		.filter(Boolean)
+		.join("\n\n");
+
 	const canSubmit =
 		coverLetter.trim().length >= 10 &&
-		Number(proposedPrice) > 0 &&
-		Number(proposedTimeline) > 0 &&
-		!isPending;
+		combinedApproach.length >= 20 &&
+		combinedApproach.length <= 2000 &&
+		price > 0 &&
+		Number.isInteger(timelineDays) &&
+		timelineDays >= 1 &&
+		timelineDays <= 365 &&
+		!submit.isPending &&
+		!myProposal;
+
+	function handleApply(e: React.FormEvent) {
+		e.preventDefault();
+		if (!canSubmit) return;
+		setSubmitError(null);
+		submit.mutate(
+			{
+				jobId,
+				proposedPrice: price,
+				proposedTimeline: timelineDays,
+				approachDescription: combinedApproach,
+			},
+			{
+				onSuccess: () => {
+					toast.success("Proposal submitted — good luck.");
+					refetchMine();
+				},
+				onError: (error) => {
+					const message = getErrorMessage(
+						error,
+						"Something went wrong sending your proposal. Check the fields and try again.",
+					);
+					setSubmitError(message);
+					// A 409 here means a proposal already exists (e.g. sent in
+					// another tab) — refresh so the page flips to its state.
+					if (/already submitted|already proposed/i.test(message)) {
+						toast.info("You have already submitted a proposal for this gig.");
+						refetchMine();
+					}
+				},
+			},
+		);
+	}
+
+	function handleWithdraw() {
+		if (!myProposal) return;
+		if (!confirmingWithdraw) {
+			setConfirmingWithdraw(true);
+			return;
+		}
+		withdraw.mutate(myProposal.id, {
+			onSuccess: () => {
+				toast.success("Proposal withdrawn.");
+				setConfirmingWithdraw(false);
+				refetchMine();
+			},
+			onError: (error) => {
+				toast.error(
+					getErrorMessage(error, "Could not withdraw the proposal. Try again."),
+				);
+			},
+		});
+	}
 
 	const experience = formatExperience(job.experienceLevel);
 	const posted = formatLongDate(job.createdAt);
@@ -114,19 +225,29 @@ export default function JobDetailPage() {
 				job={job}
 				eyebrow="Open gig"
 				actions={
-					<Button
-						type="button"
-						size="lg"
-						className="w-full shadow-xs lg:w-auto"
-						onClick={() =>
-							document
-								.getElementById("apply")
-								?.scrollIntoView({ behavior: "smooth", block: "start" })
-						}
-					>
-						<PaperPlaneTilt className="size-4" data-icon="inline-start" />
-						Apply now
-					</Button>
+					myProposal ? (
+						<Link
+							href="/dashboard/freelancer/proposals"
+							className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-secondary px-2.5 text-sm font-medium text-secondary-foreground shadow-xs transition-all hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+						>
+							<CheckCircle className="size-4" data-icon="inline-start" />
+							Proposal sent
+						</Link>
+					) : (
+						<Button
+							type="button"
+							size="lg"
+							className="w-full shadow-xs lg:w-auto"
+							onClick={() =>
+								document
+									.getElementById("apply")
+									?.scrollIntoView({ behavior: "smooth", block: "start" })
+							}
+						>
+							<PaperPlaneTilt className="size-4" data-icon="inline-start" />
+							Apply now
+						</Button>
+					)
 				}
 			/>
 
@@ -257,32 +378,101 @@ export default function JobDetailPage() {
 
 				<div className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-6">
 					<DetailSidebarCard
-						title="Send a proposal"
-						description="Stand out with a sharp pitch and a fair price."
+						title={myProposal ? "Your proposal" : "Send a proposal"}
+						description={
+							myProposal
+								? "You have already pitched for this gig — one proposal per job."
+								: "Stand out with a sharp pitch and a fair price."
+						}
 					>
-						{isSuccess ? (
-							<div
-								role="status"
-								className="flex flex-col items-center rounded-2xl border border-emerald-500/30 bg-emerald-500/10 px-5 py-8 text-center"
-							>
-								<span className="grid size-12 place-items-center rounded-2xl bg-emerald-500 text-white shadow-xs">
-									<CheckCircle className="size-6" />
-								</span>
-								<p className="mt-3 font-semibold text-emerald-700 dark:text-emerald-300">
-									Proposal submitted
-								</p>
-								<p className="mt-1 max-w-[26ch] text-sm text-balance text-emerald-700/80 dark:text-emerald-300/80">
-									The client can now review your pitch. We will notify you on
-									any reply.
-								</p>
+						{myProposal ? (
+							<div className="flex flex-col gap-4">
+								<div
+									role="status"
+									className="flex flex-col items-center rounded-2xl border border-primary/25 bg-primary/5 px-5 py-6 text-center"
+								>
+									<span className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-xs">
+										<CheckCircle className="size-6" />
+									</span>
+									<p className="mt-3 font-semibold">Already submitted</p>
+									<p className="mt-1 text-sm text-muted-foreground">
+										Sent {formatSubmitted(myProposal.submittedAt) ?? "recently"}
+									</p>
+									<div className="mt-3">
+										<ProposalStatusBadge status={myProposal.status} />
+									</div>
+								</div>
+
+								<div className="grid grid-cols-2 gap-3">
+									<DetailStat
+										label="Your price"
+										value={`$${Number(myProposal.proposedPrice).toLocaleString()}`}
+										sub="Fixed · USD"
+									/>
+									<DetailStat
+										label="Timeline"
+										value={`${myProposal.proposedTimeline} ${myProposal.proposedTimeline === 1 ? "day" : "days"}`}
+										sub="Your estimate"
+									/>
+								</div>
+
+								{myProposal.status === "PENDING" && (
+									<div className="flex flex-col gap-2">
+										{confirmingWithdraw ? (
+											<div className="flex gap-2">
+												<Button
+													type="button"
+													variant="outline"
+													size="sm"
+													className="flex-1"
+													onClick={() => {
+														setConfirmingWithdraw(false);
+														withdraw.reset();
+													}}
+												>
+													Keep it
+												</Button>
+												<Button
+													type="button"
+													variant="destructive"
+													size="sm"
+													className="flex-1"
+													disabled={withdraw.isPending}
+													onClick={handleWithdraw}
+												>
+													{withdraw.isPending
+														? "Withdrawing…"
+														: "Yes, withdraw"}
+												</Button>
+											</div>
+										) : (
+											<Button
+												type="button"
+												variant="outline"
+												size="sm"
+												onClick={handleWithdraw}
+												className="w-full text-muted-foreground hover:text-destructive"
+											>
+												<ArrowCounterClockwise
+													className="size-3.5"
+													data-icon="inline-start"
+												/>
+												Withdraw proposal
+											</Button>
+										)}
+										<p className="text-center text-xs text-muted-foreground">
+											Withdrawing is final — you can&apos;t pitch again.
+										</p>
+									</div>
+								)}
+
 								<Button
 									type="button"
-									variant="outline"
-									size="sm"
-									className="mt-4"
-									onClick={() => reset()}
+									variant="secondary"
+									className="w-full"
+									onClick={() => router.push("/dashboard/freelancer/proposals")}
 								>
-									Write another
+									View my proposals
 								</Button>
 							</div>
 						) : (
@@ -317,7 +507,7 @@ export default function JobDetailPage() {
 										id="approachDescription"
 										value={approachDescription}
 										onChange={(e) => setApproachDescription(e.target.value)}
-										placeholder="How you'd tackle the first milestone…"
+										placeholder="How you'd tackle the first milestone… (min. 20 characters)"
 										rows={3}
 										required
 										className="w-full resize-y rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm leading-relaxed shadow-xs transition-all outline-none placeholder:text-muted-foreground/70 focus-visible:ring-2 focus-visible:ring-ring/70"
@@ -330,7 +520,9 @@ export default function JobDetailPage() {
 										id="portfolioLinks"
 										value={portfolioLinks}
 										onChange={(e) => setPortfolioLinks(e.target.value)}
-										placeholder={"One link per line, e.g.\nhttps://github.com/you"}
+										placeholder={
+											"One link per line, e.g.\nhttps://github.com/you"
+										}
 										rows={2}
 										className="w-full resize-y rounded-xl border border-input bg-background px-3.5 py-2.5 text-sm leading-relaxed shadow-xs transition-all outline-none placeholder:text-muted-foreground/70 focus-visible:ring-2 focus-visible:ring-ring/70"
 									/>
@@ -356,18 +548,19 @@ export default function JobDetailPage() {
 										</div>
 									</div>
 									<div className="flex flex-col gap-1.5">
-										<Label htmlFor="proposedTimeline">Timeline</Label>
+										<Label htmlFor="proposedTimeline">Timeline (days)</Label>
 										<div className="relative">
 											<Timer className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
 											<Input
 												id="proposedTimeline"
 												type="number"
 												min={1}
+												max={365}
 												step={1}
 												inputMode="numeric"
 												value={proposedTimeline}
 												onChange={(e) => setProposedTimeline(e.target.value)}
-												placeholder="7 days"
+												placeholder="7"
 												required
 												className="h-10 rounded-xl pr-3 pl-9 shadow-xs"
 											/>
@@ -375,13 +568,12 @@ export default function JobDetailPage() {
 									</div>
 								</div>
 
-								{submitFailed && (
+								{submitError && (
 									<p
 										role="alert"
 										className="rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive"
 									>
-										Something went wrong sending your proposal. Check the fields
-										and try again.
+										{submitError}
 									</p>
 								)}
 
@@ -392,7 +584,7 @@ export default function JobDetailPage() {
 									className="w-full shadow-xs"
 								>
 									<PaperPlaneTilt className="size-4" data-icon="inline-start" />
-									{isPending ? "Submitting…" : "Submit proposal"}
+									{submit.isPending ? "Submitting…" : "Submit proposal"}
 								</Button>
 								<p className="text-center text-xs text-muted-foreground">
 									Budget {formatBudget(job)} · reply rate is highest in the
