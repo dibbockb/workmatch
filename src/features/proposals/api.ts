@@ -37,3 +37,16 @@ export function withdrawProposal(proposalId: string) {
 		method: "POST",
 	});
 }
+
+export async function getJobProposals(
+	jobId: string,
+	params: { page?: number; limit?: number } = {},
+) {
+	const qs = new URLSearchParams();
+	qs.set("page", String(params.page ?? 1));
+	qs.set("limit", String(params.limit ?? 50));
+
+	return await apiFetch<ProposalsResponse>(
+		`/v1/proposals/job/${jobId}?${qs.toString()}`,
+	).then((response) => proposalsResponseSchema.parse(response));
+}

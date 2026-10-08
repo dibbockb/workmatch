@@ -32,6 +32,14 @@ export const proposalSchema = z.object({
 	// `my-proposals` includes the full job + newest-first counter offers.
 	job: jobSchema.optional(),
 	counterOffers: z.array(counterOfferSchema).optional(),
+	// `GET /proposals/job/:jobId` (client view) includes the freelancer.
+	freelancer: z
+		.object({
+			id: z.string(),
+			name: z.string(),
+			profileImageUrl: z.string().nullish(),
+		})
+		.optional(),
 });
 
 export type Proposal = z.infer<typeof proposalSchema>;

@@ -34,6 +34,7 @@ import {
 } from "@/features/jobs/job-detail";
 import { formatBudget } from "@/features/jobs/job-list";
 import { useCloseJob, useDeleteJob, useJob } from "@/features/jobs/queries";
+import { ProposalReviewSection } from "@/features/proposals/proposal-review";
 
 function getErrorMessage(error: unknown, fallback: string) {
 	if (error && typeof error === "object") {
@@ -307,6 +308,8 @@ export default function ClientJobDetailPage() {
 							/>
 						</div>
 					</DetailSection>
+
+					<ProposalReviewSection jobId={jobId} jobOpen={!isClosed} />
 				</div>
 
 				<div className="flex min-w-0 flex-col gap-5 lg:sticky lg:top-6">

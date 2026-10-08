@@ -1,5 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getMyProposals, submitProposal, withdrawProposal } from "./api";
+import {
+	getJobProposals,
+	getMyProposals,
+	submitProposal,
+	withdrawProposal,
+} from "./api";
 
 export function useSubmitProposal() {
 	const qc = useQueryClient();
@@ -29,5 +34,12 @@ export function useWithdrawProposal() {
 		onSuccess: () => {
 			qc.invalidateQueries({ queryKey: ["myProposals"] });
 		},
+	});
+}
+
+export function useJobProposals(jobId: string) {
+	return useQuery({
+		queryKey: ["jobProposals", jobId],
+		queryFn: () => getJobProposals(jobId),
 	});
 }
