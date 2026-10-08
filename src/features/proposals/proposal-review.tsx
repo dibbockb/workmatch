@@ -27,7 +27,7 @@ import { useAcceptProposal } from "@/features/contracts/queries";
 import { DetailSection, DetailStat } from "@/features/jobs/job-detail";
 import {
 	useJobProposals,
-	// useRejectProposal,
+	useRejectProposal,
 } from "@/features/proposals/queries";
 import type { Proposal } from "@/features/proposals/schemas";
 import { ProposalStatusBadge } from "@/features/proposals/status";
