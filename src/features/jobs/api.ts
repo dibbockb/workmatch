@@ -14,9 +14,10 @@ export async function getJobs(params: { search?: string; page?: number }) {
 	);
 }
 
-export async function getMyJobs(params: { page?: number }) {
+export async function getMyJobs(params: { page?: number; limit?: number }) {
 	const qs = new URLSearchParams();
 	qs.set("page", String(params.page ?? 1));
+	if (params.limit) qs.set("limit", String(params.limit));
 	return apiFetch<JobsResponse>(`/v1/jobs/my-posted?${qs.toString()}`);
 }
 

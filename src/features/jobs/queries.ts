@@ -23,7 +23,7 @@ export function useJob(jobId: string) {
 	});
 }
 
-export function useMyJobs(params: { page?: number }) {
+export function useMyJobs(params: { page?: number; limit?: number }) {
 	return useQuery({
 		queryKey: ["myJobs", params],
 		queryFn: () => getMyJobs(params),

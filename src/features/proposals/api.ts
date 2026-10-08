@@ -38,6 +38,12 @@ export function withdrawProposal(proposalId: string) {
 	});
 }
 
+export function rejectProposal(proposalId: string) {
+	return apiFetch(`/v1/proposals/${proposalId}/reject`, {
+		method: "POST",
+	});
+}
+
 export async function getJobProposals(
 	jobId: string,
 	params: { page?: number; limit?: number } = {},

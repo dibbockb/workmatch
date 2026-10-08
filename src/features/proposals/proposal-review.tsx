@@ -7,7 +7,9 @@ import {
 	FileText,
 	Handshake,
 	Timer,
+	XCircle,
 } from "@phosphor-icons/react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -23,7 +25,10 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useAcceptProposal } from "@/features/contracts/queries";
 import { DetailSection, DetailStat } from "@/features/jobs/job-detail";
-import { useJobProposals } from "@/features/proposals/queries";
+import {
+	useJobProposals,
+	// useRejectProposal,
+} from "@/features/proposals/queries";
 import type { Proposal } from "@/features/proposals/schemas";
 import { ProposalStatusBadge } from "@/features/proposals/status";
 
@@ -58,16 +63,33 @@ function formatSubmitted(iso?: string | null) {
 	});
 }
 
-function ProposalReviewCard({
+export function sortProposals(proposals: Proposal[]): Proposal[] {
+	return [...proposals].sort((a, b) => {
+		const rank = (s: string) =>
+			s === "PENDING" ? 0 : s === "ACCEPTED" ? 1 : 2;
+		return (
+			rank(a.status) - rank(b.status) ||
+			+new Date(b.submittedAt) - +new Date(a.submittedAt)
+		);
+	});
+}
+
+export function ProposalReviewCard({
 	proposal,
 	jobOpen,
-	accepting,
+	busy,
 	onAccept,
+	onReject,
+	jobLabel,
+	index = 0,
 }: {
 	proposal: Proposal;
 	jobOpen: boolean;
-	accepting: boolean;
+	busy?: boolean;
 	onAccept: () => void;
+	onReject: () => void;
+	jobLabel?: { title: string; href: string };
+	index?: number;
 }) {
 	const name = proposal.freelancer?.name ?? "Freelancer";
 	const initial = name.trim().charAt(0).toUpperCase() || "F";
@@ -77,63 +99,294 @@ function ProposalReviewCard({
 
 	return (
 		<li
-			className={
-				"rounded-2xl border bg-card p-5 shadow-xs transition-colors animate-rise motion-reduce:animate-none " +
-				(accepted
-					? "border-emerald-500/40"
-					: "border-border hover:border-primary/30")
-			}
+			className="animate-rise motion-reduce:animate-none"
+			style={{ animationDelay: `${Math.min(index, 8) * 45}ms` }}
 		>
-			<div className="flex items-start gap-3">
-				<span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
-					{initial}
-				</span>
-				<div className="min-w-0 flex-1">
-					<div className="flex flex-wrap items-center gap-2">
-						<p className="font-semibold tracking-tight">{name}</p>
-						<ProposalStatusBadge status={proposal.status} />
+			<article
+				className={
+					"rounded-2xl border bg-card p-5 shadow-xs transition-colors " +
+					(accepted
+						? "border-emerald-500/40"
+						: "border-border hover:border-primary/30")
+				}
+			>
+				{jobLabel && (
+					<Link
+						href={jobLabel.href}
+						className="mb-3 inline-flex max-w-full items-center gap-1.5 rounded-full border border-border bg-muted/50 px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/30 hover:text-foreground"
+					>
+						<FileText className="size-3.5 shrink-0" />
+						<span className="truncate">{jobLabel.title}</span>
+					</Link>
+				)}
+				<div className="flex items-start gap-3">
+					<span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary text-sm font-bold text-primary-foreground">
+						{initial}
+					</span>
+					<div className="min-w-0 flex-1">
+						<div className="flex flex-wrap items-center gap-2">
+							<p className="font-semibold tracking-tight">{name}</p>
+							<ProposalStatusBadge status={proposal.status} />
+						</div>
+						{submitted && (
+							<p className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+								<CalendarBlank className="size-3.5" />
+								Pitched {submitted}
+							</p>
+						)}
 					</div>
-					{submitted && (
-						<p className="mt-0.5 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-							<CalendarBlank className="size-3.5" />
-							Pitched {submitted}
-						</p>
+					{pending && jobOpen && (
+						<div className="flex shrink-0 gap-1.5">
+							<Button
+								type="button"
+								size="sm"
+								variant="outline"
+								disabled={busy}
+								onClick={onReject}
+								className="text-muted-foreground hover:text-destructive"
+							>
+								<XCircle className="size-3.5" data-icon="inline-start" />
+								Reject
+							</Button>
+							<Button
+								type="button"
+								size="sm"
+								disabled={busy}
+								onClick={onAccept}
+								className="shadow-xs"
+							>
+								<CheckCircle className="size-3.5" data-icon="inline-start" />
+								Accept
+							</Button>
+						</div>
 					)}
 				</div>
-				{pending && jobOpen && (
+
+				<div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+					<span className="inline-flex items-center gap-1.5 font-semibold tabular-nums">
+						<CurrencyDollar className="size-4 text-primary" />$
+						{Number(proposal.proposedPrice).toLocaleString()}
+					</span>
+					<span className="inline-flex items-center gap-1.5 text-muted-foreground">
+						<Timer className="size-4" />
+						<span className="font-medium text-foreground tabular-nums">
+							{proposal.proposedTimeline}
+						</span>
+						<span className="text-xs">
+							{proposal.proposedTimeline === 1 ? "day" : "days"}
+						</span>
+					</span>
+				</div>
+
+				<p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-foreground/90">
+					{proposal.approachDescription}
+				</p>
+			</article>
+		</li>
+	);
+}
+
+export function AcceptProposalDialog({
+	jobId,
+	proposal,
+	othersPending,
+	open,
+	onClose,
+}: {
+	jobId: string;
+	proposal: Proposal | null;
+	othersPending: number;
+	open: boolean;
+	onClose: () => void;
+}) {
+	const accept = useAcceptProposal(jobId);
+	const [error, setError] = useState<string | null>(null);
+
+	function close() {
+		setError(null);
+		accept.reset();
+		onClose();
+	}
+
+	function confirm() {
+		if (!proposal) return;
+		setError(null);
+		accept.mutate(proposal.id, {
+			onSuccess: () => {
+				toast.success("Proposal accepted.");
+				close();
+			},
+			onError: (err) => {
+				setError(
+					getErrorMessage(err, "Could not accept the proposal. Try again."),
+				);
+			},
+		});
+	}
+
+	return (
+		<Dialog
+			open={open}
+			onOpenChange={(next) => {
+				if (!next) close();
+			}}
+		>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>
+						Accept {proposal?.freelancer?.name ?? "this freelancer"}?
+					</DialogTitle>
+					<DialogDescription>
+						A contract starts immediately on accept.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogBody className="flex flex-col gap-4">
+					{proposal && (
+						<div className="grid grid-cols-2 gap-3">
+							<DetailStat
+								label="Agreed price"
+								value={`$${Number(proposal.proposedPrice).toLocaleString()}`}
+								sub="Fixed · USD"
+							/>
+							<DetailStat
+								label="Timeline"
+								value={`${proposal.proposedTimeline} ${proposal.proposedTimeline === 1 ? "day" : "days"}`}
+								sub="Freelancer estimate"
+							/>
+						</div>
+					)}
+					<div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm leading-relaxed text-foreground/90">
+						Accepting creates the contract and moves the job to{" "}
+						<strong>In progress</strong>.
+						{othersPending > 0 ? (
+							<>
+								{" "}
+								The other{" "}
+								<strong>
+									{othersPending} pending{" "}
+									{othersPending === 1 ? "proposal" : "proposals"}
+								</strong>{" "}
+								will be automatically rejected.
+							</>
+						) : (
+							" There are no other pending proposals."
+						)}
+					</div>
+					{error && (
+						<p role="alert" className="text-sm text-destructive">
+							{error}
+						</p>
+					)}
+				</DialogBody>
+				<Separator />
+				<DialogFooter className="border-t-0 p-6 pt-0">
+					<Button type="button" variant="outline" onClick={close}>
+						Keep reviewing
+					</Button>
+					<Button type="button" disabled={accept.isPending} onClick={confirm}>
+						{accept.isPending ? (
+							<span className="inline-flex items-center gap-2">
+								<span
+									aria-hidden
+									className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
+								/>
+								Accepting…
+							</span>
+						) : (
+							<>
+								<CheckCircle className="size-4" data-icon="inline-start" />
+								Accept & create contract
+							</>
+						)}
+					</Button>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
+	);
+}
+
+export function RejectProposalDialog({
+	jobId,
+	proposal,
+	open,
+	onClose,
+}: {
+	jobId: string;
+	proposal: Proposal | null;
+	open: boolean;
+	onClose: () => void;
+}) {
+	const reject = useRejectProposal();
+	const [error, setError] = useState<string | null>(null);
+
+	function close() {
+		setError(null);
+		reject.reset();
+		onClose();
+	}
+
+	function confirm() {
+		if (!proposal) return;
+		setError(null);
+		reject.mutate(
+			{ jobId, proposalId: proposal.id },
+			{
+				onSuccess: () => {
+					toast.success("Proposal rejected.");
+					close();
+				},
+				onError: (err) => {
+					setError(
+						getErrorMessage(err, "Could not reject the proposal. Try again."),
+					);
+				},
+			},
+		);
+	}
+
+	return (
+		<Dialog
+			open={open}
+			onOpenChange={(next) => {
+				if (!next) close();
+			}}
+		>
+			<DialogContent>
+				<DialogHeader>
+					<DialogTitle>
+						Reject {proposal?.freelancer?.name ?? "this proposal"}?
+					</DialogTitle>
+					<DialogDescription>
+						They will be notified and can no longer be hired for this job.
+					</DialogDescription>
+				</DialogHeader>
+				<DialogBody className="flex flex-col gap-4">
+					<div className="rounded-2xl border border-border/70 bg-muted/40 p-4 text-sm leading-relaxed text-muted-foreground">
+						Rejecting only affects this pitch — every other proposal stays
+						pending and the job keeps accepting new ones.
+					</div>
+					{error && (
+						<p role="alert" className="text-sm text-destructive">
+							{error}
+						</p>
+					)}
+				</DialogBody>
+				<Separator />
+				<DialogFooter className="border-t-0 p-6 pt-0">
+					<Button type="button" variant="outline" onClick={close}>
+						Keep it
+					</Button>
 					<Button
 						type="button"
-						size="sm"
-						disabled={accepting}
-						onClick={onAccept}
-						className="shrink-0 shadow-xs"
+						variant="destructive"
+						disabled={reject.isPending}
+						onClick={confirm}
 					>
-						<CheckCircle className="size-3.5" data-icon="inline-start" />
-						Accept
+						{reject.isPending ? "Rejecting…" : "Yes, reject it"}
 					</Button>
-				)}
-			</div>
-
-			<div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-				<span className="inline-flex items-center gap-1.5 font-semibold tabular-nums">
-					<CurrencyDollar className="size-4 text-primary" />$
-					{Number(proposal.proposedPrice).toLocaleString()}
-				</span>
-				<span className="inline-flex items-center gap-1.5 text-muted-foreground">
-					<Timer className="size-4" />
-					<span className="font-medium text-foreground tabular-nums">
-						{proposal.proposedTimeline}
-					</span>
-					<span className="text-xs">
-						{proposal.proposedTimeline === 1 ? "day" : "days"}
-					</span>
-				</span>
-			</div>
-
-			<p className="mt-3 text-sm leading-relaxed whitespace-pre-line text-foreground/90">
-				{proposal.approachDescription}
-			</p>
-		</li>
+				</DialogFooter>
+			</DialogContent>
+		</Dialog>
 	);
 }
 
@@ -145,49 +398,20 @@ export function ProposalReviewSection({
 	jobOpen: boolean;
 }) {
 	const { data, isLoading, isError, refetch } = useJobProposals(jobId);
-	const accept = useAcceptProposal(jobId);
-	const [selectedId, setSelectedId] = useState<string | null>(null);
-	const [acceptError, setAcceptError] = useState<string | null>(null);
+	const [dialog, setDialog] = useState<{
+		id: string;
+		mode: "accept" | "reject";
+	} | null>(null);
 
 	const proposals = data?.data.proposals ?? [];
-	const sorted = [...proposals].sort((a, b) => {
-		const rank = (s: string) =>
-			s === "PENDING" ? 0 : s === "ACCEPTED" ? 1 : 2;
-		return (
-			rank(a.status) - rank(b.status) ||
-			+new Date(b.submittedAt) - +new Date(a.submittedAt)
-		);
-	});
-
-	const selected = selectedId
-		? (proposals.find((p) => p.id === selectedId) ?? null)
+	const sorted = sortProposals(proposals);
+	const selected = dialog
+		? (proposals.find((p) => p.id === dialog.id) ?? null)
 		: null;
 	const othersPending = selected
 		? proposals.filter((p) => p.id !== selected.id && p.status === "PENDING")
-				.length
+			.length
 		: 0;
-
-	function closeDialog() {
-		setSelectedId(null);
-		setAcceptError(null);
-		accept.reset();
-	}
-
-	function confirmAccept() {
-		if (!selected) return;
-		setAcceptError(null);
-		accept.mutate(selected.id, {
-			onSuccess: () => {
-				toast.success("Proposal accepted — contract created.");
-				closeDialog();
-			},
-			onError: (error) => {
-				setAcceptError(
-					getErrorMessage(error, "Could not accept the proposal. Try again."),
-				);
-			},
-		});
-	}
 
 	return (
 		<>
@@ -255,17 +479,18 @@ export function ProposalReviewSection({
 							</div>
 						)}
 						<ul className="grid gap-3">
-							{sorted.map((proposal) => (
+							{sorted.map((proposal, index) => (
 								<ProposalReviewCard
 									key={proposal.id}
 									proposal={proposal}
+									index={index}
 									jobOpen={jobOpen}
-									accepting={accept.isPending}
-									onAccept={() => {
-										setAcceptError(null);
-										accept.reset();
-										setSelectedId(proposal.id);
-									}}
+									onAccept={() =>
+										setDialog({ id: proposal.id, mode: "accept" })
+									}
+									onReject={() =>
+										setDialog({ id: proposal.id, mode: "reject" })
+									}
 								/>
 							))}
 						</ul>
@@ -273,87 +498,19 @@ export function ProposalReviewSection({
 				)}
 			</DetailSection>
 
-			<Dialog
-				open={selected !== null}
-				onOpenChange={(open) => {
-					if (!open) closeDialog();
-				}}
-			>
-				<DialogContent>
-					<DialogHeader>
-						<DialogTitle>
-							Accept {selected?.freelancer?.name ?? "this freelancer"}?
-						</DialogTitle>
-						<DialogDescription>
-							A contract starts immediately on accept.
-						</DialogDescription>
-					</DialogHeader>
-					<DialogBody className="flex flex-col gap-4">
-						{selected && (
-							<div className="grid grid-cols-2 gap-3">
-								<DetailStat
-									label="Agreed price"
-									value={`$${Number(selected.proposedPrice).toLocaleString()}`}
-									sub="Fixed · USD"
-								/>
-								<DetailStat
-									label="Timeline"
-									value={`${selected.proposedTimeline} ${selected.proposedTimeline === 1 ? "day" : "days"}`}
-									sub="Freelancer estimate"
-								/>
-							</div>
-						)}
-						<div className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm leading-relaxed text-foreground/90">
-							Accepting creates the contract and moves the job to{" "}
-							<strong>In progress</strong>.
-							{othersPending > 0 ? (
-								<>
-									{" "}
-									The other{" "}
-									<strong>
-										{othersPending} pending{" "}
-										{othersPending === 1 ? "proposal" : "proposals"}
-									</strong>{" "}
-									will be automatically rejected.
-								</>
-							) : (
-								" There are no other pending proposals."
-							)}
-						</div>
-						{acceptError && (
-							<p role="alert" className="text-sm text-destructive">
-								{acceptError}
-							</p>
-						)}
-					</DialogBody>
-					<Separator />
-					<DialogFooter className="border-t-0 p-6 pt-0">
-						<Button type="button" variant="outline" onClick={closeDialog}>
-							Keep reviewing
-						</Button>
-						<Button
-							type="button"
-							disabled={accept.isPending}
-							onClick={confirmAccept}
-						>
-							{accept.isPending ? (
-								<span className="inline-flex items-center gap-2">
-									<span
-										aria-hidden
-										className="size-4 animate-spin rounded-full border-2 border-current border-t-transparent"
-									/>
-									Accepting…
-								</span>
-							) : (
-								<>
-									<CheckCircle className="size-4" data-icon="inline-start" />
-									Accept & create contract
-								</>
-							)}
-						</Button>
-					</DialogFooter>
-				</DialogContent>
-			</Dialog>
+			<AcceptProposalDialog
+				jobId={jobId}
+				proposal={dialog?.mode === "accept" ? selected : null}
+				othersPending={othersPending}
+				open={dialog?.mode === "accept"}
+				onClose={() => setDialog(null)}
+			/>
+			<RejectProposalDialog
+				jobId={jobId}
+				proposal={dialog?.mode === "reject" ? selected : null}
+				open={dialog?.mode === "reject"}
+				onClose={() => setDialog(null)}
+			/>
 		</>
 	);
 }
