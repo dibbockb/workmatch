@@ -136,12 +136,12 @@ export default function JobDetailPage() {
 			.map((link) => link.trim())
 			.filter(Boolean).length > 0
 			? [
-				`Portfolio:\n${portfolioLinks
-					.split("\n")
-					.map((link) => link.trim())
-					.filter(Boolean)
-					.join("\n")}`,
-			]
+					`Portfolio:\n${portfolioLinks
+						.split("\n")
+						.map((link) => link.trim())
+						.filter(Boolean)
+						.join("\n")}`,
+				]
 			: []),
 	]
 		.filter(Boolean)
@@ -379,7 +379,13 @@ export default function JobDetailPage() {
 						title={myProposal ? "Your proposal" : "Send a proposal"}
 						description={
 							myProposal
-								? "You have already pitched for this gig."
+								? myProposal.status === "PENDING"
+									? "You have already pitched for this gig — one proposal per job."
+									: myProposal.status === "WITHDRAWN"
+										? "You withdrew your pitch for this gig."
+										: myProposal.status === "ACCEPTED"
+											? "The client accepted your pitch."
+											: "The client passed on your pitch this time."
 								: "Stand out with a sharp pitch and a fair price."
 						}
 					>
@@ -390,11 +396,25 @@ export default function JobDetailPage() {
 									className="flex flex-col items-center rounded-2xl border border-primary/25 bg-primary/5 px-5 py-6 text-center"
 								>
 									<span className="grid size-12 place-items-center rounded-2xl bg-primary text-primary-foreground shadow-xs">
-										<CheckCircle className="size-6" />
+										{myProposal.status === "WITHDRAWN" ? (
+											<ArrowCounterClockwise className="size-6" />
+										) : (
+											<CheckCircle className="size-6" />
+										)}
 									</span>
-									<p className="mt-3 font-semibold">Already submitted</p>
+									<p className="mt-3 font-semibold">
+										{myProposal.status === "PENDING"
+											? "Already submitted"
+											: myProposal.status === "WITHDRAWN"
+												? "Proposal withdrawn"
+												: myProposal.status === "ACCEPTED"
+													? "Proposal accepted"
+													: "Not selected"}
+									</p>
 									<p className="mt-1 text-sm text-muted-foreground">
 										Sent {formatSubmitted(myProposal.submittedAt) ?? "recently"}
+										{myProposal.status === "WITHDRAWN" &&
+											" · withdrawing is final, you can't pitch again"}
 									</p>
 									<div className="mt-3">
 										<ProposalStatusBadge status={myProposal.status} />
