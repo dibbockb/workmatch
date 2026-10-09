@@ -3,6 +3,7 @@ import {
 	blockUser,
 	getAdminDashboardStats,
 	getAdminUsers,
+	getAuditLogs,
 	unblockUser,
 } from "./api";
 
@@ -17,6 +18,13 @@ export function useAdminDashboardStats() {
 	return useQuery({
 		queryKey: ["adminDashboard"],
 		queryFn: getAdminDashboardStats,
+	});
+}
+
+export function useAuditLogs() {
+	return useQuery({
+		queryKey: ["adminAuditLogs"],
+		queryFn: getAuditLogs,
 	});
 }
 

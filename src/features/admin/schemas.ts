@@ -48,3 +48,28 @@ export const adminDashboardStatsSchema = z.object({
 });
 
 export type AdminDashboardStats = z.infer<typeof adminDashboardStatsSchema>;
+
+export const auditLogSchema = z.object({
+	id: z.string(),
+	// System-generated events (e.g. Stripe webhooks) carry no actor.
+	userId: z.string().nullish(),
+	action: z.string(),
+	entityType: z.string(),
+	entityId: z.string(),
+	changes: z.unknown().nullish(),
+	createdAt: z.string(),
+});
+
+export type AuditLog = z.infer<typeof auditLogSchema>;
+
+export const auditLogsResponseSchema = z.object({
+	success: z.boolean(),
+	statusCode: z.number(),
+	message: z.string(),
+	data: z.object({
+		logs: z.array(auditLogSchema),
+		total: z.number(),
+	}),
+});
+
+export type AuditLogsResponse = z.infer<typeof auditLogsResponseSchema>;

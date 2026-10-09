@@ -5,6 +5,7 @@ import {
 	Handshake,
 	MagnifyingGlass,
 	PlusCircle,
+	Scroll,
 	SquaresFour,
 	UsersThree,
 	type Icon,
@@ -27,7 +28,7 @@ export const NAV: Record<Role, NavGroup[]> = {
 				{
 					label: "My jobs",
 					href: "/dashboard/client/jobs",
-					icon: Briefcase
+					icon: Briefcase,
 				},
 				{
 					label: "Proposals",
@@ -71,6 +72,11 @@ export const NAV: Record<Role, NavGroup[]> = {
 			items: [
 				{ label: "Overview", href: "/dashboard/admin", icon: SquaresFour },
 				{ label: "Users", href: "/dashboard/admin/users", icon: UsersThree },
+				{
+					label: "Audit logs",
+					href: "/dashboard/admin/audit-logs",
+					icon: Scroll,
+				},
 			],
 		},
 	],

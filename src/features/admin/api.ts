@@ -2,8 +2,10 @@ import apiFetch from "@/lib/api-client";
 import {
 	type AdminDashboardStats,
 	type AdminUsersResponse,
+	type AuditLogsResponse,
 	adminDashboardStatsSchema,
 	adminUsersResponseSchema,
+	auditLogsResponseSchema,
 } from "./schemas";
 
 export async function getAdminUsers() {
@@ -23,5 +25,11 @@ export function unblockUser(userId: string) {
 export async function getAdminDashboardStats() {
 	return await apiFetch<AdminDashboardStats>("/v1/admin/dashboard").then(
 		(response) => adminDashboardStatsSchema.parse(response),
+	);
+}
+
+export async function getAuditLogs() {
+	return await apiFetch<AuditLogsResponse>("/v1/admin/audit-logs").then(
+		(response) => auditLogsResponseSchema.parse(response),
 	);
 }
