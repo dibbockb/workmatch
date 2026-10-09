@@ -58,7 +58,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loadingRole, setLoadingRole] = useState<DemoRole | null>(null);
 
-  const busy = loginMutation.isPending || loginMutation.isSuccess;
+  const busy = loginMutation.isPending;
 
   async function signIn(values: LoginInput) {
     try {
