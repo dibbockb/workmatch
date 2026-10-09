@@ -82,7 +82,6 @@ function PaymentSuccessInner() {
 		if (sessionId && !toasted.current) {
 			toasted.current = true;
 			toast.success("Payment successful", {
-				description: "Your contract is active and funds are in escrow.",
 			});
 		}
 	}, [sessionId]);

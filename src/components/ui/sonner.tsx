@@ -10,8 +10,6 @@ import {
 	SpinnerIcon,
 } from "@phosphor-icons/react";
 
-// Surface, accents and radii all resolve to site tokens — see the
-// "Sonner toasts" block in src/app/globals.css. No inline theming here.
 const Toaster = ({ ...props }: ToasterProps) => {
 	const { theme = "system" } = useTheme();
 

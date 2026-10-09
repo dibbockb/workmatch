@@ -286,7 +286,6 @@ export function AcceptProposalDialog({
 						</p>
 					)}
 				</DialogBody>
-				<Separator />
 				<DialogFooter className="border-t-0 p-6 pt-0">
 					<Button type="button" variant="outline" onClick={close}>
 						Keep reviewing
@@ -379,7 +378,6 @@ export function RejectProposalDialog({
 						</p>
 					)}
 				</DialogBody>
-				<Separator />
 				<DialogFooter className="border-t-0 p-6 pt-0">
 					<Button type="button" variant="outline" onClick={close}>
 						Keep it
