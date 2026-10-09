@@ -13,11 +13,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { HeaderStat, PageHeader } from "@/components/shared/page-header";
-import {
-	DonutChart,
-	StatusBars,
-	type ChartSegment,
-} from "@/features/admin/charts";
+import { DonutChart, StatusBars, type ChartSegment } from "@/components/charts";
 
 import {
 	useAdminDashboardStats,
