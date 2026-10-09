@@ -3,16 +3,135 @@
 import {
 	ArrowRight,
 	Briefcase,
+	ChartPieSlice,
 	CurrencyDollar,
 	Handshake,
 	UsersThree,
 	WarningCircle,
 } from "@phosphor-icons/react";
 import Link from "next/link";
+import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { HeaderStat, PageHeader } from "@/components/shared/page-header";
+import {
+	DonutChart,
+	StatusBars,
+	type ChartSegment,
+} from "@/features/admin/charts";
 
-import { useAdminDashboardStats } from "@/features/admin/queries";
+import {
+	useAdminDashboardStats,
+	useAdminUsers,
+} from "@/features/admin/queries";
+import { useJobs } from "@/features/jobs/queries";
+
+const ROLE_SEGMENTS: Record<
+	string,
+	{ label: string; stroke: string; dot: string; bar: string }
+> = {
+	CLIENT: {
+		label: "Clients",
+		stroke: "stroke-sky-500",
+		dot: "bg-sky-500",
+		bar: "bg-sky-500",
+	},
+	FREELANCER: {
+		label: "Freelancers",
+		stroke: "stroke-violet-500",
+		dot: "bg-violet-500",
+		bar: "bg-violet-500",
+	},
+	ADMIN: {
+		label: "Admins",
+		stroke: "stroke-amber-500",
+		dot: "bg-amber-500",
+		bar: "bg-amber-500",
+	},
+};
+
+const JOB_STATUS_SEGMENTS: Record<
+	string,
+	{ label: string; stroke: string; dot: string; bar: string }
+> = {
+	OPEN: {
+		label: "Open",
+		stroke: "stroke-emerald-500",
+		dot: "bg-emerald-500",
+		bar: "bg-emerald-500",
+	},
+	IN_PROGRESS: {
+		label: "In progress",
+		stroke: "stroke-sky-500",
+		dot: "bg-sky-500",
+		bar: "bg-sky-500",
+	},
+	COMPLETED: {
+		label: "Completed",
+		stroke: "stroke-violet-500",
+		dot: "bg-violet-500",
+		bar: "bg-violet-500",
+	},
+	CLOSED: {
+		label: "Closed",
+		stroke: "stroke-muted-foreground",
+		dot: "bg-muted-foreground/60",
+		bar: "bg-muted-foreground/50",
+	},
+	CANCELLED: {
+		label: "Cancelled",
+		stroke: "stroke-rose-500",
+		dot: "bg-rose-500",
+		bar: "bg-rose-500",
+	},
+};
+
+function ChartCard({
+	icon,
+	title,
+	hint,
+	children,
+	index,
+	action,
+}: {
+	icon: React.ReactNode;
+	title: string;
+	hint: string;
+	children: React.ReactNode;
+	index: number;
+	action?: React.ReactNode;
+}) {
+	return (
+		<section
+			className="rounded-3xl border border-border bg-card p-6 shadow-xs animate-rise motion-reduce:animate-none sm:p-7"
+			style={{ animationDelay: `${index * 70}ms` }}
+		>
+			<div className="flex items-start justify-between gap-4">
+				<div className="flex items-center gap-3">
+					<span className="grid size-10 shrink-0 place-items-center rounded-xl bg-secondary/60 text-secondary-foreground ring-1 ring-black/5">
+						{icon}
+					</span>
+					<div>
+						<h2 className="font-semibold tracking-tight">{title}</h2>
+						<p className="mt-0.5 text-xs text-muted-foreground">{hint}</p>
+					</div>
+				</div>
+				{action}
+			</div>
+			<div className="mt-5">{children}</div>
+		</section>
+	);
+}
+
+function ChartSkeleton() {
+	return (
+		<div aria-hidden className="animate-pulse space-y-3">
+			<div className="h-4 w-1/3 rounded-md bg-muted" />
+			<div className="h-2.5 rounded-full bg-muted" />
+			<div className="h-4 w-1/4 rounded-md bg-muted/70" />
+			<div className="h-2.5 rounded-full bg-muted/70" />
+		</div>
+	);
+}
 
 function StatTile({
 	icon,
@@ -54,6 +173,59 @@ export default function AdminDashboardPage() {
 	const { data, isLoading, isError, refetch } = useAdminDashboardStats();
 	const stats = data?.data;
 	const revenue = stats?.totalRevenue._sum.platformCommission ?? 0;
+
+	const { data: usersData, isLoading: usersLoading } = useAdminUsers();
+	const {
+		data: jobsData,
+		isLoading: jobsLoading,
+		isError: jobsError,
+		refetch: refetchJobs,
+	} = useJobs({ limit: 100 });
+
+	const roleSegments = useMemo<ChartSegment[]>(() => {
+		const users = usersData?.data.users ?? [];
+		const counts = new Map<string, number>();
+		for (const u of users) counts.set(u.role, (counts.get(u.role) ?? 0) + 1);
+		return Object.entries(ROLE_SEGMENTS).map(([key, meta]) => ({
+			key,
+			label: meta.label,
+			value: counts.get(key) ?? 0,
+			stroke: meta.stroke,
+			dot: meta.dot,
+			bar: meta.bar,
+		}));
+	}, [usersData]);
+
+	const { jobSegments, jobsAnalyzed, jobsTotal } = useMemo(() => {
+		const jobs = jobsData?.data.jobs ?? [];
+		const counts = new Map<string, number>();
+		for (const job of jobs)
+			counts.set(job.status, (counts.get(job.status) ?? 0) + 1);
+		const order = ["OPEN", "IN_PROGRESS", "COMPLETED", "CLOSED", "CANCELLED"];
+		const seen = [...counts.keys()].filter((k) => !order.includes(k));
+		return {
+			jobSegments: [...order, ...seen]
+				.filter((key) => counts.has(key))
+				.map((key) => {
+					const meta = JOB_STATUS_SEGMENTS[key] ?? {
+						label: key.charAt(0) + key.slice(1).toLowerCase(),
+						stroke: "stroke-primary",
+						dot: "bg-primary",
+						bar: "bg-primary",
+					};
+					return {
+						key,
+						label: meta.label,
+						value: counts.get(key) ?? 0,
+						stroke: meta.stroke,
+						dot: meta.dot,
+						bar: meta.bar,
+					};
+				}),
+			jobsAnalyzed: jobs.length,
+			jobsTotal: jobsData?.data.pagination.total ?? jobs.length,
+		};
+	}, [jobsData]);
 
 	return (
 		<div className="mx-auto flex w-full max-w-4xl flex-col gap-6">
@@ -130,6 +302,68 @@ export default function AdminDashboardPage() {
 					/>
 				</div>
 			)}
+
+			<div className="grid items-start gap-5 lg:grid-cols-2">
+				<ChartCard
+					index={4}
+					icon={<ChartPieSlice className="size-5" />}
+					title="Users by role"
+					hint="Who makes up the marketplace"
+					action={
+						<Link
+							href="/dashboard/admin/users"
+							className="shrink-0 rounded-lg px-2 py-1 text-xs font-semibold text-primary transition-colors hover:bg-primary/10 focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:outline-none"
+						>
+							Manage
+						</Link>
+					}
+				>
+					{usersLoading ? (
+						<ChartSkeleton />
+					) : (
+						<DonutChart
+							segments={roleSegments}
+							centerLabel="users"
+							centerValue={usersData?.data.total.toLocaleString() ?? "0"}
+						/>
+					)}
+				</ChartCard>
+
+				<ChartCard
+					index={5}
+					icon={<Briefcase className="size-5" />}
+					title="Jobs by status"
+					hint={
+						jobsTotal > jobsAnalyzed
+							? `Latest ${jobsAnalyzed} of ${jobsTotal} jobs`
+							: `${jobsTotal} ${jobsTotal === 1 ? "job" : "jobs"} total`
+					}
+				>
+					{jobsLoading ? (
+						<ChartSkeleton />
+					) : jobsError ? (
+						<div className="flex items-center justify-between gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 px-4 py-3">
+							<p className="text-sm text-destructive">
+								Could not load job breakdown.
+							</p>
+							<Button
+								variant="outline"
+								size="sm"
+								onClick={() => refetchJobs()}
+								className="border-destructive/30 bg-background/60 text-destructive hover:bg-background hover:text-destructive"
+							>
+								Retry
+							</Button>
+						</div>
+					) : jobSegments.length === 0 ? (
+						<p className="rounded-2xl border border-dashed border-border bg-muted/40 p-5 text-center text-sm text-muted-foreground">
+							No jobs posted yet — status breakdown appears here.
+						</p>
+					) : (
+						<StatusBars segments={jobSegments} />
+					)}
+				</ChartCard>
+			</div>
 
 			<Link
 				href="/dashboard/admin/users"

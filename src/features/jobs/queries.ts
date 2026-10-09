@@ -9,7 +9,11 @@ import {
 	updateJob,
 } from "./api";
 
-export function useJobs(params: { search?: string; page?: number }) {
+export function useJobs(params: {
+	search?: string;
+	page?: number;
+	limit?: number;
+}) {
 	return useQuery({
 		queryKey: ["jobs", params],
 		queryFn: () => getJobs(params),

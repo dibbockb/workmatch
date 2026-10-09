@@ -2,12 +2,19 @@ import apiFetch from "@/lib/api-client";
 import { Job, JobsResponse, jobsResponseSchema } from "./schemas";
 import { useQuery } from "@tanstack/react-query";
 
-export async function getJobs(params: { search?: string; page?: number }) {
+export async function getJobs(params: {
+	search?: string;
+	page?: number;
+	limit?: number;
+}) {
 	const qs = new URLSearchParams();
 	if (params.search) {
 		qs.set("search", params.search);
 	}
 	qs.set("page", String(params.page ?? 1));
+	if (params.limit) {
+		qs.set("limit", String(params.limit));
+	}
 
 	return await apiFetch<JobsResponse>(`/v1/jobs?${qs.toString()}`).then(
 		(response) => jobsResponseSchema.parse(response),
