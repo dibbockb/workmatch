@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/calendar";
 import {
 	Field,
 	FieldDescription,
@@ -133,9 +134,9 @@ export default function NewJobPage() {
 
 	const budgetPreview =
 		Number.isFinite(Number(values.budgetMin)) &&
-			Number.isFinite(Number(values.budgetMax)) &&
-			Number(values.budgetMin) > 0 &&
-			Number(values.budgetMax) > 0
+		Number.isFinite(Number(values.budgetMax)) &&
+		Number(values.budgetMin) > 0 &&
+		Number(values.budgetMax) > 0
 			? `$${Number(values.budgetMin).toLocaleString()} – $${Number(values.budgetMax).toLocaleString()}`
 			: "—";
 
@@ -402,14 +403,16 @@ export default function NewJobPage() {
 									<CalendarBlank className="size-4 text-primary" />
 									Deadline
 								</FieldLabel>
-								<Input
+								<DatePicker
 									id="job-deadline"
-									type="date"
 									value={values.deadline}
 									min={today}
-									onChange={(e) => set("deadline", e.target.value)}
-									onBlur={() => setTouched(true)}
-									className="h-10 rounded-xl shadow-xs"
+									placeholder="Pick a deadline"
+									invalid={Boolean(errors.deadline)}
+									onChange={(iso) => {
+										set("deadline", iso);
+										setTouched(true);
+									}}
 								/>
 								<FieldError>{errors.deadline}</FieldError>
 							</Field>
@@ -445,7 +448,7 @@ export default function NewJobPage() {
 											className={cn(
 												"cursor-pointer rounded-xl border px-3 py-2.5 text-center text-xs font-semibold tracking-wide uppercase transition-all focus-within:ring-2 focus-within:ring-ring/60 focus-within:outline-none has-checked:border-primary/40 has-checked:bg-primary has-checked:text-primary-foreground has-checked:shadow-xs",
 												!active &&
-												"border-border bg-background/60 text-muted-foreground hover:border-primary/30 hover:text-foreground",
+													"border-border bg-background/60 text-muted-foreground hover:border-primary/30 hover:text-foreground",
 											)}
 										>
 											<input
