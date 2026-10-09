@@ -314,7 +314,7 @@ export function DatePicker({
 					sideOffset={6}
 					className="z-50"
 				>
-					<PopoverPrimitive.Popup className="overflow-hidden rounded-2xl border border-border bg-popover text-popover-foreground shadow-lg transition-all duration-150 ease-snappy data-[ending-style]:scale-95 data-[ending-style]:opacity-0 data-[starting-style]:scale-95 data-[starting-style]:opacity-0">
+					<PopoverPrimitive.Popup className="overflow-hidden rounded-2xl border border-border bg-popover text-popover-foreground shadow-lg transition-all duration-150 ease-snappy data-ending-style:scale-95 data-ending-style:opacity-0 data-starting-style:scale-95 data-starting-style:opacity-0">
 						<Calendar
 							selected={selected}
 							min={minDate}
