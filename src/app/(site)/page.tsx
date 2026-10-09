@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Navbar from "@/components/landing/navbar";
 import { cn } from "@/lib/utils";
 import {
 	ArrowRight,
@@ -134,8 +133,6 @@ export default function Home() {
 			id="top"
 			className="min-h-full bg-background font-sans text-foreground"
 		>
-			<Navbar />
-
 			<div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
 				<div className="absolute inset-x-0 top-0 mx-auto h-160 max-w-5xl rounded-b-[4rem] bg-linear-to-b from-secondary/60 via-secondary/20 to-transparent" />
 				<div className="absolute top-24 left-1/2 h-72 w-2xl -translate-x-1/2 rounded-full bg-primary/10 blur-[120px]" />
@@ -163,6 +160,7 @@ export default function Home() {
 					<span className="relative inline-block text-primary">
 						matched in hours
 						<svg
+
 							viewBox="0 0 320 14"
 							className="absolute -bottom-2 left-0 w-full text-secondary"
 							fill="none"
@@ -201,7 +199,7 @@ export default function Home() {
 							placeholder="Try “SaaS dashboard designer” or “Next.js + AI”…"
 							className="w-full bg-transparent text-sm text-foreground outline-none sm:text-[15px]"
 						/>
-						<button className="group hidden shrink-0 items-center gap-1.5 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-all duration-500 ease-snappy hover:bg-primary/90 active:scale-[0.97] sm:inline-flex">
+						<button type="button" className="group hidden shrink-0 items-center gap-1.5 rounded-full bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition-all duration-500 ease-snappy hover:bg-primary/90 active:scale-[0.97] sm:inline-flex">
 							Find talent
 							<ArrowRight className="size-4 transition-transform duration-500 ease-spring group-hover:translate-x-1" />
 						</button>
@@ -215,6 +213,7 @@ export default function Home() {
 							"Pitch deck",
 						].map((t) => (
 							<button
+								type="button"
 								key={t}
 								onClick={() => setQuery(t)}
 								className="rounded-full border border-border bg-card px-3.5 py-1.5 font-medium text-foreground transition-all duration-300 ease-snappy hover:-translate-y-0.5 hover:border-primary/40 hover:bg-secondary hover:text-secondary-foreground hover:shadow-md"
@@ -369,7 +368,7 @@ export default function Home() {
 										</div>
 									))}
 								</div>
-								<button className="mt-4 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground transition-transform duration-500 ease-spring hover:scale-[1.02] active:scale-[0.98]">
+								<button type="button" className="mt-4 w-full rounded-xl bg-primary py-2.5 text-sm font-bold text-primary-foreground transition-transform duration-500 ease-spring hover:scale-[1.02] active:scale-[0.98]">
 									Approve & release
 								</button>
 								<p className="mt-2 text-center text-[11px] text-muted-foreground">
@@ -572,7 +571,7 @@ export default function Home() {
 									</span>
 								))}
 							</div>
-							<button className="mt-5 w-full rounded-xl border border-border py-2.5 text-sm font-bold transition-all duration-500 ease-snappy group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+							<button type="button" className="mt-5 w-full rounded-xl border border-border py-2.5 text-sm font-bold transition-all duration-500 ease-snappy group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
 								View profile
 							</button>
 						</article>
@@ -665,6 +664,7 @@ export default function Home() {
 				<div className="mt-6 inline-flex rounded-full border border-border bg-card p-1 text-sm font-semibold">
 					{(["monthly", "yearly"] as const).map((b) => (
 						<button
+							type="button"
 							key={b}
 							onClick={() => setBilling(b)}
 							className={cn(
@@ -768,6 +768,7 @@ export default function Home() {
 								))}
 							</ul>
 							<button
+								type="button"
 								className={cn(
 									"mt-6 w-full rounded-xl py-3 text-sm font-bold transition-transform duration-500 ease-spring hover:scale-[1.02] active:scale-[0.98]",
 									p.hot
@@ -801,6 +802,7 @@ export default function Home() {
 								)}
 							>
 								<button
+									type="button"
 									onClick={() => setOpenFaq(open ? null : i)}
 									className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left text-[15px] font-bold"
 								>

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Navbar from "@/components/landing/navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -105,8 +104,6 @@ export default function SignupPage() {
 
 	return (
 		<div className="min-h-full bg-background font-sans text-foreground">
-			<Navbar />
-
 			<main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 pt-24 pb-8">
 				<div className="animate-rise rounded-4xl border border-border bg-card p-6 shadow-[0_40px_100px_-40px_oklch(0.43_0.04_42/0.5)] sm:p-7">
 					<h1 className="mt-1 text-2xl font-bold tracking-[-0.03em]">

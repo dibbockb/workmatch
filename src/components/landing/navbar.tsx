@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Briefcase, List, X, ArrowRight, Sparkle } from "@phosphor-icons/react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
@@ -16,8 +16,55 @@ const LINKS = [
 	{ label: "Contact", href: "/contact" },
 ];
 
+import { usePathname, useRouter } from "next/navigation";
+
 function isPageRoute(href: string) {
 	return href.startsWith("/");
+}
+
+function scrollToId(id: string) {
+	document
+		.getElementById(id)
+		?.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function HashLink({
+	href,
+	className,
+	style,
+	children,
+	onNavigate,
+}: {
+	href: string;
+	className?: string;
+	style?: React.CSSProperties;
+	children: React.ReactNode;
+	onNavigate?: () => void;
+}) {
+	const pathname = usePathname();
+	const router = useRouter();
+	const id = href.slice(1);
+
+	return (
+		<a
+			href={href}
+			className={className}
+			style={style}
+			onClick={(e) => {
+				e.preventDefault();
+				onNavigate?.();
+				if (pathname === "/") {
+					scrollToId(id);
+				} else {
+					// Off the homepage: go home first — Next jumps to the
+					// anchor, and the persistent layout keeps this smooth.
+					router.push(`/#${id}`);
+				}
+			}}
+		>
+			{children}
+		</a>
+	);
 }
 
 export default function Navbar() {
@@ -25,6 +72,17 @@ export default function Navbar() {
 	const [progress, setProgress] = useState(0);
 	const [open, setOpen] = useState(false);
 	const { data: user } = useMe();
+	const pathname = usePathname();
+
+	// The navbar outlives page navigations now — never trap the user
+	// behind an open mobile menu from the previous page.
+	const prevPath = useRef(pathname);
+	useEffect(() => {
+		if (prevPath.current !== pathname) {
+			prevPath.current = pathname;
+			setOpen(false);
+		}
+	});
 
 	useEffect(() => {
 		let raf = 0;
@@ -98,13 +156,13 @@ export default function Navbar() {
 										{l.label}
 									</Link>
 								) : (
-									<a
+									<HashLink
 										key={l.label}
 										href={l.href}
 										className="rounded-full px-3.5 py-2 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors duration-300 ease-snappy hover:bg-secondary hover:text-secondary-foreground"
 									>
 										{l.label}
-									</a>
+									</HashLink>
 								),
 							)}
 						</div>
@@ -180,16 +238,16 @@ export default function Navbar() {
 										<ArrowRight className="size-4 opacity-40" />
 									</Link>
 								) : (
-									<a
+									<HashLink
 										key={l.label}
 										href={l.href}
-										onClick={() => setOpen(false)}
+										onNavigate={() => setOpen(false)}
 										style={{ transitionDelay: open ? `${i * 60}ms` : "0ms" }}
 										className={linkClass}
 									>
 										{l.label}
 										<ArrowRight className="size-4 opacity-40" />
-									</a>
+									</HashLink>
 								);
 							})}
 

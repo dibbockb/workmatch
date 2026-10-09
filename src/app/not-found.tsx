@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Navbar from "@/components/landing/navbar";
 import PageBackdrop from "@/components/shared/page-backdrop";
 import NotFoundActions from "@/components/shared/not-found";
 
@@ -8,7 +7,6 @@ export const metadata: Metadata = { title: "Page not found | WorkMatch" };
 export default function NotFound() {
 	return (
 		<div className="min-h-full bg-background font-sans text-foreground">
-			<Navbar />
 			<PageBackdrop />
 
 			<main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 pt-32 pb-16">
