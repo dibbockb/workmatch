@@ -6,7 +6,10 @@
 		"useIgnoreFile": true
 	},
 	"files": {
-		"includes": ["**", "!!**/dist"]
+		"includes": [
+			"**",
+			"!!**/dist"
+		]
 	},
 	"formatter": {
 		"enabled": true,
@@ -22,7 +25,8 @@
 				"noUnusedImports": "off"
 			},
 			"suspicious": {
-				"noExplicitAny": "off"
+				"noExplicitAny": "off",
+				"noArrayIndexKey": "off"
 			},
 			"complexity": {
 				"useOptionalChain": "off"
@@ -33,7 +37,8 @@
 				"useNodejsImportProtocol": "off"
 			},
 			"a11y": {
-				"useValidAriaRole": "off"
+				"useValidAriaRole": "off",
+				"noSvgWithoutTitle": "off"
 			}
 		}
 	},
