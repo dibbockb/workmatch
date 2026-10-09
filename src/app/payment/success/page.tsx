@@ -81,8 +81,7 @@ function PaymentSuccessInner() {
 	useEffect(() => {
 		if (sessionId && !toasted.current) {
 			toasted.current = true;
-			toast.success("Payment successful", {
-			});
+			toast.success("Payment successful", {});
 		}
 	}, [sessionId]);
 

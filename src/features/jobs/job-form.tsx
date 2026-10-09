@@ -74,8 +74,8 @@ function defaultValues(job?: DetailJob | null): JobFormValues {
 			String(job?.experienceLevel ?? "").toUpperCase(),
 		)
 			? (String(
-				job?.experienceLevel,
-			).toUpperCase() as JobFormValues["experienceLevel"])
+					job?.experienceLevel,
+				).toUpperCase() as JobFormValues["experienceLevel"])
 			: "BEGINNER",
 	};
 }
@@ -396,9 +396,9 @@ export function JobForm({
 
 	const budgetPreview =
 		Number.isFinite(Number(values.budgetMin)) &&
-			Number.isFinite(Number(values.budgetMax)) &&
-			Number(values.budgetMin) > 0 &&
-			Number(values.budgetMax) > 0
+		Number.isFinite(Number(values.budgetMax)) &&
+		Number(values.budgetMin) > 0 &&
+		Number(values.budgetMax) > 0
 			? `$${Number(values.budgetMin).toLocaleString()} – $${Number(values.budgetMax).toLocaleString()}`
 			: "Set a range freelancers can trust";
 

@@ -313,7 +313,7 @@ export default function AdminUsersPage() {
 												className={cn(
 													"shrink-0",
 													!blocked &&
-													"text-muted-foreground hover:text-destructive",
+														"text-muted-foreground hover:text-destructive",
 												)}
 											>
 												<Prohibit

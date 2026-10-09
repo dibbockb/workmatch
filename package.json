@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "twlint": "bunx @tailwindcss/upgrade"
+    "twlint": "bunx @tailwindcss/upgrade --force"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

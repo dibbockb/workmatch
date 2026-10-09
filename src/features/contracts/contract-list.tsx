@@ -89,7 +89,6 @@ function paymentOf(contract: Contract) {
 }
 
 function PaymentChip({ status }: { status: string | null }) {
-
 	if (status === "PENDING") {
 		return (
 			<span className="inline-flex shrink-0 items-center rounded-full bg-amber-500/10 px-2.5 py-1 text-[0.6875rem] leading-none font-semibold tracking-wider whitespace-nowrap text-amber-600 uppercase ring-1 ring-amber-500/30 ring-inset dark:text-amber-400">

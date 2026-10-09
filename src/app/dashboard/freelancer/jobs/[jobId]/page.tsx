@@ -136,12 +136,12 @@ export default function JobDetailPage() {
 			.map((link) => link.trim())
 			.filter(Boolean).length > 0
 			? [
-				`Portfolio:\n${portfolioLinks
-					.split("\n")
-					.map((link) => link.trim())
-					.filter(Boolean)
-					.join("\n")}`,
-			]
+					`Portfolio:\n${portfolioLinks
+						.split("\n")
+						.map((link) => link.trim())
+						.filter(Boolean)
+						.join("\n")}`,
+				]
 			: []),
 	]
 		.filter(Boolean)

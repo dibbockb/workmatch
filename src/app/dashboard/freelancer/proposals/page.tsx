@@ -205,8 +205,8 @@ export default function MyProposalsPage() {
 	const needle = query.trim().toLowerCase();
 	const visible = needle
 		? proposals.filter((p) =>
-			(p.job?.title ?? "").toLowerCase().includes(needle),
-		)
+				(p.job?.title ?? "").toLowerCase().includes(needle),
+			)
 		: proposals;
 
 	function setParam(key: string, value: string) {
