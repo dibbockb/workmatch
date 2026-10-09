@@ -1,4 +1,5 @@
 import apiFetch from "@/lib/api-client";
+import { type ContractsResponse, contractsResponseSchema } from "./schemas";
 
 export type AcceptProposalBody = {
 	jobId: string;
@@ -26,4 +27,16 @@ export function getCheckoutUrl(
 ): string | null {
 	const url = response?.data?.checkoutUrl;
 	return typeof url === "string" && url.startsWith("https://") ? url : null;
+}
+
+export async function getMyContracts() {
+	return await apiFetch<ContractsResponse>("/v1/contracts").then((response) =>
+		contractsResponseSchema.parse(response),
+	);
+}
+
+export function markContractComplete(contractId: string) {
+	return apiFetch(`/v1/contracts/${contractId}/mark-complete`, {
+		method: "PATCH",
+	});
 }

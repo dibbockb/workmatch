@@ -1,5 +1,23 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { acceptProposal } from "./api";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { acceptProposal, getMyContracts, markContractComplete } from "./api";
+
+export function useMyContracts() {
+	return useQuery({
+		queryKey: ["myContracts"],
+		queryFn: getMyContracts,
+	});
+}
+
+export function useMarkComplete() {
+	const qc = useQueryClient();
+	return useMutation({
+		mutationFn: markContractComplete,
+		onSuccess: () => {
+			qc.invalidateQueries({ queryKey: ["myContracts"] });
+			qc.invalidateQueries({ queryKey: ["myJobs"] });
+		},
+	});
+}
 
 export function useAcceptProposal(jobId: string) {
 	const qc = useQueryClient();

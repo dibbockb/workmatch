@@ -88,6 +88,7 @@ function ProposalCard({
 									Proposal {proposal.id.slice(0, 8)}
 								</p>
 							)}
+							<br />
 							{submitted && (
 								<p className="mt-1 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
 									<CalendarBlank className="size-3.5" />
@@ -204,8 +205,8 @@ export default function MyProposalsPage() {
 	const needle = query.trim().toLowerCase();
 	const visible = needle
 		? proposals.filter((p) =>
-				(p.job?.title ?? "").toLowerCase().includes(needle),
-			)
+			(p.job?.title ?? "").toLowerCase().includes(needle),
+		)
 		: proposals;
 
 	function setParam(key: string, value: string) {
