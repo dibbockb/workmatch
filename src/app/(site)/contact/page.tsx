@@ -24,7 +24,7 @@ export default function ContactPage() {
 							name="name"
 							type="text"
 							required
-							placeholder="Jane Doe"
+							placeholder="John Dough"
 							className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
 						/>
 					</div>
@@ -38,7 +38,7 @@ export default function ContactPage() {
 							name="email"
 							type="email"
 							required
-							placeholder="jane@example.com"
+							placeholder="you@company.com"
 							className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
 						/>
 					</div>

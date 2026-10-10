@@ -6,11 +6,6 @@ const client = ofetch.create({
 	credentials: "include",
 	timeout: 60 * 1000,
 	retry: 0,
-	onResponse({ response }) {
-		if (process.env.NODE_ENV === "development") {
-			console.log(`[API Response] ${response.status} ${response.url}`);
-		}
-	},
 });
 
 // A 401 from these endpoints is a real answer, not an expired session.

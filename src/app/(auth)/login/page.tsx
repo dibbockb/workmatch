@@ -81,7 +81,7 @@ export default function LoginPage() {
 
 	return (
 		<div className="min-h-full bg-background font-sans text-foreground">
-			<main className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-5 pt-32 pb-16">
+			<main className="mx-auto flex w-full max-w-md flex-col justify-center px-1 pt-28 pb-16 sm:px-5 sm:pt-24 sm:pb-8">
 				<div className="animate-rise rounded-4xl border border-border bg-card p-7 shadow-[0_40px_100px_-40px_oklch(0.43_0.04_42/0.5)] sm:p-9">
 					<h1 className="mt-5 text-3xl font-bold tracking-[-0.03em]">
 						Welcome back
@@ -147,7 +147,7 @@ export default function LoginPage() {
 											name={field.name}
 											type="email"
 											autoComplete="email"
-											placeholder="jhon@doe.com"
+											placeholder="you@company.com"
 											aria-invalid={invalid}
 											value={field.state.value}
 											onBlur={field.handleBlur}
