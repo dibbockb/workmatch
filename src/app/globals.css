@@ -324,6 +324,28 @@
   text-wrap: balance;
 }
 
+/* ------------------------------------------------------------------ *
+ * Entrance animations wait for a visible tab (see VisibilityGate).
+ * Unlayered author CSS would beat the `motion-reduce` utility, so these
+ * live in the utilities layer and re-assert reduced-motion explicitly.
+ * ------------------------------------------------------------------ */
+
+@layer utilities {
+  .animate-rise {
+    animation: none;
+  }
+
+  html.tab-live .animate-rise {
+    animation: var(--animate-rise);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html.tab-live .animate-rise {
+      animation: none;
+    }
+  }
+}
+
 @utility navbar-morph {
   /* NOTE: backdrop-filter + filter are intentionally NOT transitioned —
      animating them forces a full backdrop repaint every frame (scroll lag).

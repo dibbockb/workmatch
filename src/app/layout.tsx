@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Providers from "@/providers";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SiteChrome } from "@/components/landing/site-chrome";
+import { VisibilityGate } from "@/components/motion/visibility-gate";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistMono = Geist_Mono({
@@ -28,6 +29,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 			<Providers>
 				<body className="min-h-full flex flex-col">
 					<ThemeProvider>
+						<VisibilityGate />
 						<SiteChrome />
 						{children}
 					</ThemeProvider>
