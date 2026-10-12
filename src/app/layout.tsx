@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
 	title: "WorkMatch - Hire vetted experts, matched in hours",
 	description:
-		"WorkMatch is the high-trust marketplace where 24,000+ vetted freelancers meet serious teams. Post a brief, get 3 curated matches, pay safely in escrow.",
+		"WorkMatch is the high-trust marketplace where vetted freelancers meet serious teams. Post a brief, get curated matches, pay safely in escrow.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

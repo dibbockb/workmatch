@@ -19,90 +19,51 @@ import {
 	VideoCamera,
 	Headset,
 	CaretDown,
-	Quotes,
 	Plus,
 	Minus,
 } from "@phosphor-icons/react";
 
 const CATEGORIES = [
-	{ icon: Code, name: "Development", gigs: "12.4k experts", delta: "+18%" },
-	{ icon: Palette, name: "Design", gigs: "9.1k experts", delta: "+12%" },
-	{ icon: Megaphone, name: "Marketing", gigs: "7.8k experts", delta: "+24%" },
-	{ icon: PenNib, name: "Writing", gigs: "5.3k experts", delta: "+9%" },
+	{ icon: Code, name: "Development" },
+	{ icon: Palette, name: "Design" },
+	{ icon: Megaphone, name: "Marketing" },
+	{ icon: PenNib, name: "Writing" },
 	{
 		icon: VideoCamera,
 		name: "Video & Motion",
-		gigs: "3.9k experts",
-		delta: "+31%",
 	},
-	{ icon: ChartLineUp, name: "Data & AI", gigs: "4.6k experts", delta: "+42%" },
+	{ icon: ChartLineUp, name: "Data & AI" },
 ];
 
-const TALENT = [
+const TALENT_PILLARS = [
 	{
-		name: "Maya Chen",
-		role: "Product Designer · Ex-Stripe",
-		rate: "$85/hr",
-		rating: "5.0",
-		jobs: "132 jobs",
-		match: "98%",
-		tags: ["SaaS", "Design Systems", "Figma"],
-		initials: "MC",
+		title: "Reviewed craft",
+		desc: "Portfolios and past work reviewed by a human, not just a form.",
+		tags: ["Portfolio review", "References", "Work history"],
+		initials: "RC",
 	},
 	{
-		name: "Jonas Weber",
-		role: "Full-stack Engineer · React / Node",
-		rate: "$95/hr",
-		rating: "4.9",
-		jobs: "98 jobs",
-		match: "96%",
-		tags: ["Next.js", "Postgres", "AI SDKs"],
-		initials: "JW",
+		title: "Paid trial task",
+		desc: "Start with a small scoped task before committing to a full project.",
+		tags: ["Scoped trial", "Clear rates", "Defined timeline"],
+		initials: "PT",
 	},
 	{
-		name: "Amara Okafor",
-		role: "Brand & Motion Designer",
-		rate: "$72/hr",
-		rating: "5.0",
-		jobs: "210 jobs",
-		match: "97%",
-		tags: ["Branding", "After Effects", "Webflow"],
-		initials: "AO",
-	},
-];
-
-const TESTIMONIALS = [
-	{
-		quote:
-			"We posted a dashboard brief on Monday. By Wednesday we had three vetted seniors. The 98% match was not marketing — it was scary accurate.",
-		name: "Elena Rodriguez",
-		role: "VP Product, Northloop",
-		initials: "ER",
-	},
-	{
-		quote:
-			"WorkMatch replaced three tools for us: sourcing, escrow and QA. Our contractor spend dropped 31% while output doubled.",
-		name: "David Kim",
-		role: "Founder, Parcelform",
-		initials: "DK",
-	},
-	{
-		quote:
-			"As a freelancer, this is the first marketplace that feels built for craftspeople. No bidding wars, just great briefs matched to me.",
-		name: "Sofia Almeida",
-		role: "Motion Designer, Top 1%",
-		initials: "SA",
+		title: "Ongoing quality",
+		desc: "Milestones, revisions and IP transfer built into every project.",
+		tags: ["Milestones", "Revisions", "IP transfer"],
+		initials: "OQ",
 	},
 ];
 
 const FAQS = [
 	{
 		q: "How is WorkMatch different from Upwork or Fiverr?",
-		a: "No bidding wars and no endless scrolling. Every expert is vetted (only 4% pass), and our matching engine scores fit on skills, timezone, budget and work style — so you see 3 perfect fits instead of 300 maybes. Payments, contracts and QA are built in.",
+		a: "No bidding wars and no endless scrolling. Every expert is vetted, and matching is based on skills, timezone, budget and work style — so you see a small set of strong fits instead of hundreds of maybes. Payments, contracts and QA are built in.",
 	},
 	{
 		q: "How fast can I hire?",
-		a: "Most briefs get matched in under 24 hours. Post a job in 2 minutes, review curated matches, start with a paid trial task. 78% of clients kick off within 3 days.",
+		a: "Post a job in 2 minutes, review curated matches, and start with a paid trial task before committing to the full project.",
 	},
 	{
 		q: "How do payments and protection work?",
@@ -139,19 +100,6 @@ export default function Home() {
 			</div>
 
 			<section className="mx-auto max-w-5xl px-5 pt-36 text-center sm:pt-44">
-				<div className="animate-rise hidden lg:inline">
-					<a
-						href="#marketplace"
-						className="group inline-flex items-center gap-2 rounded-full border border-border bg-card/80 py-1.5 pr-4 pl-1.5 text-[13px] font-medium text-muted-foreground shadow-sm backdrop-blur transition-all duration-500 ease-snappy hover:border-primary/40 hover:shadow-md"
-					>
-						<span className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-secondary-foreground">
-							NEW
-						</span>
-						AI matching 2.0 — 98.2% placement accuracy
-						<ArrowRight className="size-3.5 transition-transform duration-500 ease-snappy group-hover:translate-x-1" />
-					</a>
-				</div>
-
 				<h1
 					className="animate-rise mx-auto mt-7 max-w-3xl text-[2.75rem] leading-[1.02] font-bold tracking-[-0.04em] text-balance sm:text-6xl md:text-7xl"
 					style={{ animationDelay: "80ms" }}
@@ -180,9 +128,9 @@ export default function Home() {
 					className="animate-rise mx-auto mt-7 max-w-2xl text-base leading-relaxed text-pretty text-muted-foreground sm:text-lg"
 					style={{ animationDelay: "160ms" }}
 				>
-					WorkMatch is the high-trust marketplace where 24,000+ vetted
-					freelancers meet serious teams. Post a brief, get 3 curated matches,
-					pay safely in escrow.
+					WorkMatch is the high-trust marketplace where vetted freelancers
+					meet serious teams. Post a brief, get curated matches, pay
+					safely in escrow.
 				</p>
 
 				<div
@@ -228,30 +176,14 @@ export default function Home() {
 					className="animate-rise mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row"
 					style={{ animationDelay: "320ms" }}
 				>
-					<div className="flex -space-x-3">
-						{["JK", "MT", "AS", "RP", "+9k"].map((t, i) => (
-							<span
-								key={t}
-								className={cn(
-									"grid size-10 place-items-center rounded-full border-2 border-background text-[11px] font-bold",
-									i === 4
-										? "bg-primary text-primary-foreground"
-										: "bg-card text-foreground shadow-sm",
-								)}
-							>
-								{t}
-							</span>
-						))}
-					</div>
 					<div className="flex items-center gap-2 text-sm">
 						<span className="flex gap-0.5 text-primary">
 							{Array.from({ length: 5 }).map((_, i) => (
 								<Star key={i} weight="fill" className="size-4" />
 							))}
 						</span>
-						<span className="font-semibold">4.9/5</span>
 						<span className="text-muted-foreground">
-							from 8,200+ verified hires
+							Vetted talent · Escrow-protected payments
 						</span>
 					</div>
 				</div>
@@ -378,66 +310,8 @@ export default function Home() {
 						</div>
 					</div>
 
-					<div className="animate-float-slow absolute -left-4 top-16 hidden rounded-2xl border border-border bg-card/95 px-4 py-3 text-left shadow-xl backdrop-blur lg:block">
-						<p className="flex items-center gap-1.5 text-xs font-bold">
-							<CheckCircle weight="fill" className="size-4 text-primary" />{" "}
-							Hired in 19h
-						</p>
-						<p className="mt-0.5 text-xs text-muted-foreground">
-							avg. this week
-						</p>
-					</div>
-					<div
-						className="animate-float-slow absolute -right-4 bottom-16 hidden rounded-2xl border border-border bg-card/95 px-4 py-3 text-left shadow-xl backdrop-blur lg:block"
-						style={{ animationDelay: "1.5s" }}
-					>
-						<p className="flex items-center gap-1.5 text-xs font-bold">
-							<ShieldCheck weight="fill" className="size-4 text-primary" />{" "}
-							$2.4M escrowed
-						</p>
-						<p className="mt-0.5 text-xs text-muted-foreground">
-							protected this month
-						</p>
-					</div>
-				</div>
-			</section>
 
-			<section className="mx-auto mt-16 max-w-4xl px-5 text-center">
-				<p className="text-xs font-bold tracking-[0.18em] text-muted-foreground uppercase">
-					Powering hiring at 3,400+ teams
-				</p>
-				<div className="relative mt-6 overflow-hidden mask-[linear-gradient(to_right,transparent,black_15%,black_85%,transparent)]">
-					<div className="animate-marquee flex w-max gap-3">
-						{[
-							...[
-								"Northloop",
-								"Parcelform",
-								"Hexlab",
-								"Craftly",
-								"Moonshot",
-								"Finch & Co",
-								"Dataline",
-								"Brightstack",
-							],
-							...[
-								"Northloop",
-								"Parcelform",
-								"Hexlab",
-								"Craftly",
-								"Moonshot",
-								"Finch & Co",
-								"Dataline",
-								"Brightstack",
-							],
-						].map((b, i) => (
-							<span
-								key={`${b}-${i}`}
-								className="rounded-full border border-border bg-card px-5 py-2.5 text-sm font-bold whitespace-nowrap text-muted-foreground"
-							>
-								{b}
-							</span>
-						))}
-					</div>
+
 				</div>
 			</section>
 
@@ -465,12 +339,6 @@ export default function Home() {
 									<c.icon className="size-5" weight="duotone" />
 								</span>
 								<p className="mt-4 text-[15px] font-bold">{c.name}</p>
-								<p className="mt-0.5 text-[13px] text-muted-foreground">
-									{c.gigs}
-								</p>
-								<p className="mt-2 inline-block rounded-full bg-muted px-2 py-0.5 text-[11px] font-bold text-primary">
-									{c.delta} demand
-								</p>
 							</a>
 						))}
 					</div>
@@ -496,7 +364,7 @@ export default function Home() {
 						{
 							n: "02",
 							t: "Meet 3 curated matches",
-							d: "No bidding. We score 24k experts and hand you the best three with rates and availability.",
+							d: "No bidding. We review vetted experts and hand you a shortlist with rates and availability.",
 							icon: Lightning,
 						},
 						{
@@ -533,34 +401,25 @@ export default function Home() {
 			>
 				<SectionBadge>Top talent</SectionBadge>
 				<h2 className="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
-					Meet experts clients rehire again and again
+					Work with experts who take craft seriously
 				</h2>
 				<p className="mx-auto mt-4 max-w-xl text-muted-foreground">
-					4% acceptance rate. Live availability. Verified outcomes on every
-					profile.
+					Every expert is vetted. Every project includes clear rates,
+					availability and revision cover.
 				</p>
 				<div className="mt-10 grid gap-4 text-left md:grid-cols-3">
-					{TALENT.map((t) => (
+					{TALENT_PILLARS.map((t) => (
 						<article
-							key={t.name}
+							key={t.title}
 							className="group rounded-3xl border border-border bg-card p-6 transition-all duration-500 ease-snappy hover:-translate-y-2 hover:shadow-[0_30px_60px_-30px_oklch(0.43_0.04_42/0.45)]"
 						>
 							<div className="flex items-start justify-between">
 								<span className="grid size-14 place-items-center rounded-2xl bg-secondary text-lg font-bold text-secondary-foreground">
 									{t.initials}
 								</span>
-								<span className="rounded-full bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">
-									{t.match} match
-								</span>
 							</div>
-							<h3 className="mt-4 text-lg font-bold">{t.name}</h3>
-							<p className="text-sm text-muted-foreground">{t.role}</p>
-							<div className="mt-3 flex items-center gap-2 text-[13px]">
-								<Star weight="fill" className="size-4 text-primary" />
-								<b>{t.rating}</b>
-								<span className="text-muted-foreground">· {t.jobs}</span>
-								<span className="ml-auto font-bold">{t.rate}</span>
-							</div>
+							<h3 className="mt-4 text-lg font-bold">{t.title}</h3>
+							<p className="text-sm text-muted-foreground">{t.desc}</p>
 							<div className="mt-4 flex flex-wrap gap-1.5">
 								{t.tags.map((tag) => (
 									<span
@@ -571,9 +430,7 @@ export default function Home() {
 									</span>
 								))}
 							</div>
-							<button type="button" className="mt-5 w-full rounded-xl border border-border py-2.5 text-sm font-bold transition-all duration-500 ease-snappy group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
-								View profile
-							</button>
+
 						</article>
 					))}
 				</div>
@@ -581,7 +438,7 @@ export default function Home() {
 					href="#cta"
 					className="group mt-8 inline-flex items-center gap-2 text-sm font-bold text-primary"
 				>
-					Browse all 24,000 experts
+					Post a brief to get matched
 					<ArrowRight className="size-4 transition-transform duration-500 ease-spring group-hover:translate-x-1.5" />
 				</a>
 			</section>
@@ -596,60 +453,23 @@ export default function Home() {
 						Why teams switch
 					</p>
 					<h2 className="mx-auto mt-4 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
-						The numbers behind the addiction
+						Built for trust, not bidding wars
 					</h2>
 					<div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-6 sm:grid-cols-4">
 						{[
-							["19h", "median time to hire"],
-							["98.2%", "match accuracy"],
-							["$2.4M", "escrowed monthly"],
-							["4.9/5", "client satisfaction"],
+							["Curated matches", "a shortlist, not endless scrolling"],
+							["Escrow protection", "funds release on approval"],
+							["Human review", "craft checked by people"],
+							["Clear ownership", "IP transfer on payment"],
 						].map(([v, l]) => (
-							<div key={l}>
-								<p className="text-3xl font-bold tracking-tight sm:text-4xl">
+							<div key={v}>
+								<p className="text-xl font-bold tracking-tight sm:text-2xl">
 									{v}
 								</p>
 								<p className="mt-1 text-[13px] opacity-70">{l}</p>
 							</div>
 						))}
 					</div>
-				</div>
-			</section>
-
-			<section
-				id="stories"
-				className="mx-auto mt-24 max-w-4xl scroll-mt-28 px-5 text-center"
-			>
-				<SectionBadge>Client stories</SectionBadge>
-				<h2 className="mx-auto mt-5 max-w-2xl text-3xl font-bold tracking-[-0.03em] text-balance sm:text-5xl">
-					Loved by operators, adored by craftspeople
-				</h2>
-				<div className="mt-10 grid gap-4 text-left sm:grid-cols-3">
-					{TESTIMONIALS.map((t) => (
-						<figure
-							key={t.name}
-							className="flex flex-col rounded-3xl border border-border bg-card p-6 transition-all duration-500 ease-snappy hover:-translate-y-1.5 hover:shadow-xl"
-						>
-							<Quotes
-								weight="fill"
-								className="size-6 text-secondary-foreground/50"
-							/>
-							<blockquote className="mt-3 flex-1 text-sm leading-relaxed text-foreground">
-								“{t.quote}”
-							</blockquote>
-							<figcaption className="mt-5 flex items-center gap-3 border-t border-border pt-4">
-								<span className="grid size-10 place-items-center rounded-full bg-muted text-xs font-bold">
-									{t.initials}
-								</span>
-								<span>
-									<span className="block text-sm font-bold">{t.name}</span>
-									<span className="block text-xs text-muted-foreground">
-										{t.role}
-									</span>
-								</span>
-							</figcaption>
-						</figure>
-					))}
 				</div>
 			</section>
 
@@ -853,8 +673,7 @@ export default function Home() {
 						Post your brief today. Meet your match tomorrow.
 					</h2>
 					<p className="mx-auto mt-4 max-w-xl text-[15px] opacity-80 sm:text-base">
-						Join 3,400+ teams hiring on WorkMatch. Free to post — pay only when
-						you hire someone you love.
+						Free to post — pay only when you hire someone you love.
 					</p>
 					<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
 						<a
@@ -896,7 +715,6 @@ export default function Home() {
 								{ label: "How it works", href: "#how" },
 								{ label: "Talent", href: "#talent" },
 								{ label: "Pricing", href: "#pricing" },
-								{ label: "Stories", href: "#stories" },
 							].map((l) => (
 								<a
 									key={l.label}
