@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ContactForm } from "@/components/contact-form";
 
 export const metadata: Metadata = {
 	title: "Contact | WorkMatch",
@@ -14,56 +15,7 @@ export default function ContactPage() {
 					Questions, feedback, or something broken? Send us a note.
 				</p>
 
-				<form className="mt-8 space-y-5 rounded-4xl border border-border bg-card p-7 shadow-[0_40px_100px_-40px_oklch(0.43_0.04_42/0.5)] sm:p-9">
-					<div className="space-y-1.5">
-						<label htmlFor="name" className="text-sm font-medium">
-							Name
-						</label>
-						<input
-							id="name"
-							name="name"
-							type="text"
-							required
-							placeholder="John Dough"
-							className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
-						/>
-					</div>
-
-					<div className="space-y-1.5">
-						<label htmlFor="email" className="text-sm font-medium">
-							Email
-						</label>
-						<input
-							id="email"
-							name="email"
-							type="email"
-							required
-							placeholder="you@company.com"
-							className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
-						/>
-					</div>
-
-					<div className="space-y-1.5">
-						<label htmlFor="message" className="text-sm font-medium">
-							Message
-						</label>
-						<textarea
-							id="message"
-							name="message"
-							rows={5}
-							required
-							placeholder="How can we help?"
-							className="w-full resize-none rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none focus:ring-2 focus:ring-primary"
-						/>
-					</div>
-
-					<button
-						type="submit"
-						className="w-full rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground"
-					>
-						Send message
-					</button>
-				</form>
+				<ContactForm />
 
 				<p className="mt-6 text-sm text-muted-foreground">
 					Prefer email? Reach the founder directly at{" "}
