@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist_Mono } from "next/font/google";
+import { Onest } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import Providers from "@/providers";
@@ -8,8 +8,8 @@ import { SiteChrome } from "@/components/landing/site-chrome";
 import { VisibilityGate } from "@/components/motion/visibility-gate";
 import { Toaster } from "@/components/ui/sonner";
 
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
+const onest = Onest({
+	variable: "--font-sans",
 	subsets: ["latin"],
 });
 
@@ -24,7 +24,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
 		<html
 			lang="en"
 			suppressHydrationWarning
-			className={cn("h-full", "antialiased", geistMono.variable, "font-sans")}
+			className={cn("h-full", "antialiased", onest.variable, "font-sans")}
 		>
 			<Providers>
 				<body className="min-h-full flex flex-col">
