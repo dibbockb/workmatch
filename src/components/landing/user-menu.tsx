@@ -65,7 +65,7 @@ export default function AuthActions() {
 					Sign in
 				</Link>
 				<Link
-					href="/signup"
+					href="/dashboard/client/jobs/new"
 					className="group hidden shrink-0 items-center gap-1.5 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold whitespace-nowrap text-primary-foreground shadow-[0_8px_20px_-10px_oklch(0.43_0.04_42/0.8)] transition-colors duration-300 hover:bg-primary/90 sm:inline-flex"
 				>
 					<Sparkle

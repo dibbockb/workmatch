@@ -2,6 +2,10 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
+import {
+	getNextPath as getNextPathFromSearch,
+	useAuthSwitchHref,
+} from "@/lib/auth-redirect";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -22,16 +26,12 @@ import {
 	ShieldCheck,
 } from "@phosphor-icons/react";
 import { registerSchema, type RegisterInput } from "@/features/auth/schemas";
-import { useLogin, useRegister } from "@/features/auth/queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { getMe } from "@/features/auth/api";
+import { authKeys, useLogin, useRegister } from "@/features/auth/queries";
 
 function getNextPath() {
-	const next = new URLSearchParams(window.location.search).get("next");
-	const safe =
-		next &&
-		next.startsWith("/") &&
-		!next.startsWith("//") &&
-		!next.startsWith("/\\");
-	return safe ? next : "/dashboard";
+	return getNextPathFromSearch(window.location.search);
 }
 
 const PASSWORD_RULES = [
@@ -132,6 +132,8 @@ const ROLE_OPTIONS = [
 export default function SignupPage() {
 	const [showPassword, setShowPassword] = useState(false);
 	const router = useRouter();
+	const qc = useQueryClient();
+	const loginHref = useAuthSwitchHref("/login");
 	const registerMutation = useRegister();
 	const loginMutation = useLogin();
 	const [loadingRole, setLoadingRole] = useState<DemoRole | "form" | null>(
@@ -145,6 +147,18 @@ export default function SignupPage() {
 		setLoadingRole("form");
 		try {
 			await registerMutation.mutateAsync(values);
+			try {
+				// Warm the session cache before navigating: otherwise the
+				// dashboard shell sees a stale logged-out state and bounces
+				// back to /login (which then drops ?next= at the role home).
+				await qc.fetchQuery({
+					queryKey: authKeys.me(),
+					queryFn: getMe,
+					retry: false,
+				});
+			} catch {
+				// Fall through — the proxy/shell will re-check the session.
+			}
 			router.replace(getNextPath());
 			router.refresh();
 		} catch {
@@ -172,6 +186,18 @@ export default function SignupPage() {
 				email: account.email,
 				password: account.password,
 			});
+			try {
+				// Warm the session cache before navigating: otherwise the
+				// dashboard shell sees a stale logged-out state and bounces
+				// back to /login (which then drops ?next= at the role home).
+				await qc.fetchQuery({
+					queryKey: authKeys.me(),
+					queryFn: getMe,
+					retry: false,
+				});
+			} catch {
+				// Fall through — the proxy/shell will re-check the session.
+			}
 			router.replace(getNextPath());
 			router.refresh();
 		} catch {
@@ -421,7 +447,7 @@ export default function SignupPage() {
 					<p className="mt-4 text-center text-sm text-muted-foreground">
 						Already have an account?{" "}
 						<Link
-							href="/login"
+							href={loginHref}
 							className="font-bold text-primary hover:underline"
 						>
 							Sign in

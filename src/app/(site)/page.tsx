@@ -435,7 +435,7 @@ export default function Home() {
 					))}
 				</div>
 				<a
-					href="#cta"
+					href="/dashboard/client/jobs/new"
 					className="group mt-8 inline-flex items-center gap-2 text-sm font-bold text-primary"
 				>
 					Post a brief to get matched
@@ -513,6 +513,7 @@ export default function Home() {
 								"14-day guarantee",
 							],
 							cta: "Post a job free",
+							href: "/dashboard/client/jobs/new",
 							hot: false,
 						},
 						{
@@ -527,6 +528,7 @@ export default function Home() {
 								"Advanced QA + revisions",
 							],
 							cta: "Start 14-day trial",
+							href: "/signup",
 							hot: true,
 						},
 						{
@@ -541,6 +543,7 @@ export default function Home() {
 								"SLA + success manager",
 							],
 							cta: "Talk to sales",
+							href: "/contact",
 							hot: false,
 						},
 					].map((p) => (
@@ -587,17 +590,17 @@ export default function Home() {
 									</li>
 								))}
 							</ul>
-							<button
-								type="button"
+							<a
+								href={p.href}
 								className={cn(
-									"mt-6 w-full rounded-xl py-3 text-sm font-bold transition-transform duration-500 ease-spring hover:scale-[1.02] active:scale-[0.98]",
+									"mt-6 block w-full rounded-xl py-3 text-center text-sm font-bold transition-transform duration-500 ease-spring hover:scale-[1.02] active:scale-[0.98]",
 									p.hot
 										? "bg-primary-foreground text-primary"
 										: "bg-primary text-primary-foreground",
 								)}
 							>
 								{p.cta}
-							</button>
+							</a>
 						</div>
 					))}
 				</div>
@@ -677,7 +680,7 @@ export default function Home() {
 					</p>
 					<div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
 						<a
-							href="#top"
+							href="/dashboard/client/jobs/new"
 							className="group inline-flex items-center gap-2 rounded-full bg-primary px-7 py-3.5 text-sm font-bold text-primary-foreground shadow-xl transition-transform duration-500 ease-spring hover:scale-[1.04] active:scale-[0.98]"
 						>
 							Post a job — it’s free

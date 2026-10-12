@@ -20,7 +20,7 @@ function isRole(value: unknown): value is Role {
 }
 
 export async function proxy(req: NextRequest) {
-	const { pathname } = req.nextUrl;
+	const { pathname, search } = req.nextUrl;
 	const token = req.cookies.get("accessToken")?.value;
 	const hasRefresh = req.cookies.has("refreshToken");
 
@@ -43,7 +43,7 @@ export async function proxy(req: NextRequest) {
 
 		if (!role) {
 			const url = new URL("/login", req.url);
-			url.searchParams.set("next", pathname);
+			url.searchParams.set("next", `${pathname}${search}`);
 			return NextResponse.redirect(url);
 		}
 

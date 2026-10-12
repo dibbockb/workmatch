@@ -278,7 +278,7 @@ export default function Navbar() {
 							)}
 
 							<Link
-								href="/signup"
+								href="/dashboard/client/jobs/new"
 								onClick={() => setOpen(false)}
 								style={{
 									transitionDelay: open

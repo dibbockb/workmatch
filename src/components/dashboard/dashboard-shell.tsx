@@ -53,17 +53,17 @@ export function DashboardShell({
 }) {
 	const pathname = usePathname();
 	const router = useRouter();
-	const { data: user, isPending } = useMe();
+	const { data: user, isPending, isFetching } = useMe();
 	const { signOut, isPending: signingOut } = useSignOut();
 
 	const groups = NAV[role];
 	const activeHref = getActiveHref(pathname, groups);
 
 	useEffect(() => {
-		if (isPending) return;
+		if (isPending || isFetching) return;
 		if (!user) router.replace(`/login?next=${encodeURIComponent(pathname)}`);
 		else if (user.role !== role) router.replace(ROLE_HOME[user.role]);
-	}, [isPending, user, role, pathname, router]);
+	}, [isPending, isFetching, user, role, pathname, router]);
 
 	return (
 		<AnimatedSidebarProvider>

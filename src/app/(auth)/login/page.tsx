@@ -2,6 +2,10 @@
 
 import { useForm } from "@tanstack/react-form";
 import { useState } from "react";
+import {
+	getNextPath as getNextPathFromSearch,
+	useAuthSwitchHref,
+} from "@/lib/auth-redirect";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -22,7 +26,9 @@ import {
 	ShieldCheck,
 } from "@phosphor-icons/react";
 import { LoginInput, loginSchema } from "@/features/auth/schemas";
-import { useLogin } from "@/features/auth/queries";
+import { useQueryClient } from "@tanstack/react-query";
+import { getMe } from "@/features/auth/api";
+import { authKeys, useLogin } from "@/features/auth/queries";
 
 const ROLE_ICONS: Record<DemoRole, typeof ShieldCheck> = {
 	admin: ShieldCheck,
@@ -31,13 +37,7 @@ const ROLE_ICONS: Record<DemoRole, typeof ShieldCheck> = {
 };
 
 function getNextPath() {
-	const next = new URLSearchParams(window.location.search).get("next");
-	const safe =
-		next &&
-		next.startsWith("/") &&
-		!next.startsWith("//") &&
-		!next.startsWith("/\\");
-	return safe ? next : "/dashboard";
+	return getNextPathFromSearch(window.location.search);
 }
 
 function getErrorMessage(error: unknown) {
@@ -49,6 +49,8 @@ function getErrorMessage(error: unknown) {
 
 export default function LoginPage() {
 	const router = useRouter();
+	const qc = useQueryClient();
+	const signupHref = useAuthSwitchHref("/signup");
 	const loginMutation = useLogin();
 	const [showPassword, setShowPassword] = useState(false);
 	const [loadingRole, setLoadingRole] = useState<DemoRole | null>(null);
@@ -58,9 +60,17 @@ export default function LoginPage() {
 	async function signIn(values: LoginInput) {
 		try {
 			await loginMutation.mutateAsync(values);
+			try {
+				await qc.fetchQuery({
+					queryKey: authKeys.me(),
+					queryFn: getMe,
+					retry: false,
+				});
+			} catch {
+			}
 			router.replace(getNextPath());
 			router.refresh();
-		} catch {}
+		} catch { }
 	}
 
 	const form = useForm({
@@ -241,7 +251,7 @@ export default function LoginPage() {
 					<p className="mt-6 text-center text-sm text-muted-foreground">
 						New to WorkMatch?{" "}
 						<Link
-							href="/signup"
+							href={signupHref}
 							className="font-bold text-primary hover:underline"
 						>
 							Create an account
