@@ -61,7 +61,7 @@ export function HeaderStat({
 	loading?: boolean;
 }) {
 	return (
-		<div className="rounded-2xl border border-border/70 bg-background/60 px-4 py-3 text-right backdrop-blur">
+		<div className="rounded-2xl border border-border/70 px-4 py-3 text-center bg-transparent">
 			<p className="text-2xl leading-none font-bold tabular-nums">
 				{loading ? (
 					<span className="inline-block h-7 w-10 animate-pulse rounded-md bg-muted align-middle" />
