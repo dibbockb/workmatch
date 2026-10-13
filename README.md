@@ -28,6 +28,7 @@ Clients post jobs, freelancers pitch with proposals, and payment runs through St
 
 - [WorkMatch](#workmatch)
   - [Table of Contents](#table-of-contents)
+  - [Landing Page Demo](#landing-page-demo)
   - [Overview](#overview)
   - [Live Links](#live-links)
   - [Try It in 30 Seconds](#try-it-in-30-seconds)
@@ -60,7 +61,11 @@ Clients post jobs, freelancers pitch with proposals, and payment runs through St
   - [Author](#author)
 
 ---
+## Landing Page Demo
 
+<video src="https://res.cloudinary.com/lpqu4s3d/video/upload/w_800,q_auto,vc_vp9/v1791710613/workmatch_demo.webm" width="800" autoplay loop muted playsinline></video>
+
+---
 ## Overview
 
 WorkMatch is the frontend of a full-stack freelance marketplace. It covers the complete hiring loop:
@@ -84,6 +89,7 @@ flowchart LR
 ```
 
 ---
+
 
 ## Live Links
 
@@ -466,4 +472,3 @@ Built as a full-stack portfolio project with a TypeScript, Express, Prisma and P
 
 ---
 This Readme was written with AI assistance and human supervision. 
-
