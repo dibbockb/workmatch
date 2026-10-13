@@ -62,8 +62,7 @@ Clients post jobs, freelancers pitch with proposals, and payment runs through St
 
 ---
 ## Landing Page Demo
-
-<video src="https://res.cloudinary.com/lpqu4s3d/video/upload/w_800,q_auto,vc_vp9/v1791710613/workmatch_demo.webm" width="800" autoplay loop muted playsinline></video>
+[workmatch_demo.webm](https://github.com/user-attachments/assets/0796fa33-a5b1-4d96-b50f-2cb7c175c480)
 
 ---
 ## Overview
